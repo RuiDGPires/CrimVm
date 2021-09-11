@@ -1,1 +1,5 @@
 .vscode
+*.swp
+*.txt
+*.bin
+a.out
