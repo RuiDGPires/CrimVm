@@ -8,6 +8,7 @@
 
 typedef int32_t i32;
 typedef uint32_t u32;
+typedef uint8_t u8;
 
 // Smallest size possible for bool
 typedef uint8_t bool;
@@ -16,8 +17,10 @@ typedef uint8_t bool;
 #define FALSE 0
 
 
-#define VM_PROG_MEM 1024
-#define VM_MEM 1024
+#define VM_PROG_MEM_SIZE 1024
+#define VM_MEM_SIZE 1024
+
+#define OP_MAX_ARGS 2
 
 typedef struct vm_s *Vm;
 
@@ -37,18 +40,25 @@ typedef struct loader_s {
 	bool is_at_eof;	
 } Loader;
 
+typedef struct {
+	u8 code;
+	u32 args[OP_MAX_ARGS];	
+} Operation;
+
+// Registers include 2 general purpose registers, a stack pointer and a return register.
+enum reg_type{R1 = 0, R2, SP, RE, R_COUNT};
 typedef struct vm_s {
 	Loader loader;
 	// MemManager memmanager;
 	// Scheduler scheduler;
 
-	u32 prog_mem[VM_PROG_MEM];
+	Operation program[VM_PROG_MEM_SIZE];
 	u32 prog_length;
 	u32 pc;
 
-	u32 vm_mem[VM_MEM];
+	u32 mem[VM_MEM_SIZE];
 
-	u32 regs[4];
+	u32 regs[R_COUNT];
 	Driver driver;
 
 	Vm parent;
@@ -58,5 +68,7 @@ typedef struct vm_s {
 int NNULL vm_init(Vm);
 int NNULL vm_destroy(Vm);
 int NNULL vm_load(Vm, char *);
+static void vm_push(u32, Vm);
+static u32 vm_pop(Vm);
 
 #endif
