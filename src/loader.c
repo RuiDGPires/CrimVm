@@ -55,6 +55,14 @@ void load(Vm vm, FILE *file){
 			case OP_POP:
 				OP->args[0] = buffer[p++];
 				break;
+			case OP_SUB:
+				OP->args[0] = buffer[p++];
+				OP->args[1] = buffer[p++];
+				break;
+			case OP_CMP:
+				OP->args[0] = buffer[p++];
+				OP->args[1] = buffer[p++];
+				break;
 		}
 	}	
 }
@@ -140,6 +148,14 @@ int parse_op(char word[], int *op){
 		*op = OP_POP;
 		return MAKE_ARG(ARG_REG); 
 	}
+	if (strcmp(word, "SUB") == 0){
+		*op = OP_SUB;
+		return MAKE_ARG2(ARG_REG, ARG_REG);	
+	}
+	if (strcmp(word, "CMP") == 0){
+		*op = OP_CMP;
+		return MAKE_ARG2(ARG_REG, ARG_REG);	
+	}
 	return -1; // ERROR
 }
 
@@ -178,7 +194,7 @@ int expect_type(int type, int *p, char buffer[], int *p_out,  u8 out_buffer[]){
 	}
 }
 
-// NEEDS TO BE CHANGED!!!!!!!!!!11
+// NEEDS TO BE CHANGED!!!!!!!!!!
 int link(char fin[], char fout[]){
 	FILE *in = fopen(fin, "r");	
 	char buffer[LINKER_BUFFER_SIZE];
@@ -206,9 +222,7 @@ int link(char fin[], char fout[]){
 		}
 	}
 	
-
 	FILE *out = fopen(fout, "wb");
-
 	// WRITE FILE TAG
 	u8 tag_buff[4];
 	for (int i = 0; i < 4; i++){
@@ -222,6 +236,8 @@ int link(char fin[], char fout[]){
 	return 0;
 }
 
+int link_F(char fin[], FILE *out){
+}
 
 void loader_init(Loader *loader, Vm vm){
 	*loader = (Loader){.load = load, .file = NULL, .vm = vm, .is_at_eof = FALSE};
