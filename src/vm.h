@@ -70,10 +70,10 @@ typedef struct vm_s {
 int NNULL vm_init(Vm);
 int NNULL vm_destroy(Vm);
 int NNULL vm_load(Vm, char *);
-static void vm_push(u32, Vm);
-static u32 vm_pop(Vm);
+static void NNULL vm_push(u32, Vm);
+static NNULL u32 vm_pop(Vm);
 
-void loader_init(Loader *, Vm);
+void NNULL loader_init(Loader *, Vm);
 int link(char *, char *);
 
 #endif
