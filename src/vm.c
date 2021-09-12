@@ -1,10 +1,14 @@
 #include "vm.h"
 #include <errno.h>
 
+u8 check_msbit(u32 val){
+	return (val & 0x80000000) != 0;
+}
 
 void run(Vm vm){
 	while(vm->pc < vm->prog_length){
 		Operation op = vm->program[vm->pc];
+		u32 res;
 		switch(op.code){
 			case OP_MVI:
 				vm->regs[op.args[0]] = op.args[1];
@@ -15,7 +19,14 @@ void run(Vm vm){
 				vm->pc++;
 				break;
 			case OP_ADD:
-				vm_push(vm->regs[op.args[0]] + vm->regs[op.args[1]], vm);
+				res = vm->regs[op.args[0]] + vm->regs[op.args[1]];
+				vm->flags = 0;
+
+				// CHECK OVERFLOWS
+				if ((check_msbit(vm->regs[op.args[0]]) || check_msbit(vm->regs[op.args[1]])) && !check_msbit(res))
+					vm->flags |= FLG_OV;
+
+				vm_push(res, vm);
 				vm->pc++;
 				break;
 			case OP_DUMP:
@@ -36,6 +47,29 @@ void run(Vm vm){
 				break;
 			case OP_POP:
 				vm->regs[op.args[0]] = vm_pop(vm);
+				vm->pc++;
+				break;
+			case OP_SUB:
+				res = vm->regs[op.args[0]] - vm->regs[op.args[1]];
+				vm->flags = 0;
+				if (check_msbit(res))
+					vm->flags |= FLG_NEG;
+
+				if (res == 0)
+					vm->flags |= FLG_ZERO;
+				
+				vm_push(res, vm);
+				vm->pc++;
+				break;
+			case OP_CMP:
+				res = vm->regs[op.args[0]] - vm->regs[op.args[1]];
+				vm->flags = 0;
+				if (check_msbit(res))
+					vm->flags |= FLG_NEG;
+
+				if (res == 0)
+					vm->flags |= FLG_ZERO;
+				
 				vm->pc++;
 				break;
 			default:

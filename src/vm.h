@@ -24,9 +24,9 @@ typedef uint8_t bool;
 
 enum op_code {OP_MVI = 0, OP_MOV, OP_ADD, OP_DUMP, OP_STORE, OP_LOAD, OP_PUSH, OP_POP, OP_SUB, OP_CMP};
 
-enum flags {FLG_ZERO = 1 << 0,
-						FLG_NEG = 1 << 1,
-					 	FLG_OV = 1 << 2,
+enum flags {FLG_ZERO = 1	<< 0,
+						FLG_NEG = 1		<< 1,
+					 	FLG_OV = 1		<< 2,
 						};
 
 typedef struct vm_s *Vm;
@@ -81,5 +81,6 @@ static NNULL u32 vm_pop(Vm);
 
 void NNULL loader_init(Loader *, Vm);
 int link(char *, char *);
+int link_F(char *, FILE *);
 
 #endif
