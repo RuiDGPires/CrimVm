@@ -100,6 +100,7 @@ int vm_init(Vm vm){
 		vm->regs[i] = 0;
 
 	vm->regs[SP] = VM_MEM_SIZE;
+	vm->regs[R0] = 0;
 	vm->flags = 0;
 	vm->driver = (Driver){.run = run, .vm = vm};
 	return 0;
