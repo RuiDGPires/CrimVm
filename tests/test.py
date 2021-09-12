@@ -58,10 +58,12 @@ for file in INPUT_FILES:
         passed  = file_text == result.stdout.decode('ascii')
 
     if not passed:
-        printError(filename + " - Failed")
+        print(FAIL, "fail\t", ENDC, ":\t", filename)
         ALL_TESTS_PASSED = False
     else:
-        printSucess(filename + " - Passed")
+        print(OKGREEN, "ok\t", ENDC, ":\t", filename) 
 
 if ALL_TESTS_PASSED:
     printSucess("\nALL TESTS PASSED!")
+else:
+    printError("\nSOME TESTS FAILED")
