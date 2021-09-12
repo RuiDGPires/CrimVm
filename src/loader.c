@@ -179,7 +179,7 @@ int expect_type(int type, int *p, char buffer[], int *p_out,  u8 out_buffer[]){
 			assert(word[0] == 'm');
 			assert(word[1] == '[');
 			assert(word[2] == 'R');
-			assert(word[3] >= '0' && word[1] < R_COUNT);
+			assert(word[3] >= '0' && word[3] - '0' < R_COUNT);
 			assert(word[4] == ']');
 			out_buffer[*p_out] = (u8) (word[3] - '0');
 			*p_out += 1;
