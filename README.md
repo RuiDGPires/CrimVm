@@ -9,7 +9,7 @@ Project is still very recent and code is slightly hammered..
 
 ## Example
 
-Using [example.as](example.as) as an example:
+Using [example.txt](example.txt) as an example:
 
 First, assemble the text file into an object file
 
