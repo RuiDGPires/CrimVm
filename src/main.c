@@ -37,12 +37,113 @@ void assemble(char fin[], char fout[]){
 	link(fin, fout);
 }
 
+#include <string.h>
+
+// Check if file extension is .cas
+int check_file_extension(char filename[], char extension[]){
+	int length = strlen(filename);
+	int ext_len = strlen(extension);
+	
+	char *last_chars = &(filename[length-ext_len]);
+	return strcmp(last_chars, extension) == 0;
+}
+
+#include <assert.h>
+
 int main(int argc, char *argv[]){
-	switch (argc){
-		case 2:
-		 run_binary(argv[1]);
-		 break;
-		case 3:
-		 assemble(argv[1], argv[2]);
+	bool flag_outfile = FALSE, flag_assemble = FALSE, flag_run = FALSE, flag_assemble_and_run = FALSE;
+	char *out_name;
+	char *filename;
+
+	if (argc == 1){
+		fprintf(stderr, "Invalid usage, please use -h to see supported arguments\n");
+		return 1;
+	}
+
+	if (argc == 2){
+		if(check_file_extension(argv[1], ".o")){
+			run_binary(argv[1]);
+			return 0;
+		}else{
+			fprintf(stderr, "Please provide an object file to run\n");
+			return 1;
+		}
+	}
+
+	bool request_cas_file = FALSE, request_run_file = FALSE, request_out_file = FALSE;
+	int c;
+	// CANT HAVE -o and -r at the same time
+	for (int i = 1; i < argc; i++){
+			if (request_cas_file) {
+				assert(check_file_extension(argv[i], ".cas"));
+				filename = argv[i];
+				request_cas_file = FALSE;
+				continue;
+			}
+		 	if (request_run_file) {
+				filename = argv[i];
+				request_run_file = FALSE;
+				continue;
+			}
+		 	if (request_out_file) {
+				out_name = argv[i];
+				request_out_file = FALSE;
+				continue;
+			}
+
+			if (strcmp(argv[i], "-ar") == 0){
+				request_cas_file = TRUE;
+				flag_assemble_and_run = TRUE;
+				continue;
+			} else if (strcmp(argv[i], "-a") == 0){
+				flag_assemble = TRUE;
+				request_cas_file = TRUE;			
+				continue;
+			} else if (strcmp(argv[i], "-r") == 0){
+				flag_run = TRUE;
+				request_run_file = TRUE;			
+				continue;
+			} else if (strcmp(argv[i], "-o") == 0){
+				flag_outfile = TRUE;
+				request_out_file = TRUE;
+				continue;
+			}
+
+			fprintf(stderr, "Invalid usage, please use -h to see supported arguments\n");
+			return 1;
+	}
+	assert(!request_out_file && !request_cas_file && !request_run_file);		
+
+	if (flag_outfile && flag_run){
+		fprintf(stderr, "Can't have -o and -r at the same time\n");
+		return 1;
+	}
+	if (flag_assemble && flag_run){
+		fprintf(stderr, "Can't have -a and -r at the same time, use -ar instead\n");
+		return 1;
+	}
+
+	int name_length = strlen(filename);
+	char new_name[name_length];
+	if ((flag_assemble || flag_assemble_and_run) && !flag_outfile){
+		strcpy(new_name, filename);
+		new_name[name_length-3] = 'o';
+		new_name[name_length-2] = '\0';
+		out_name = new_name;
+	}
+	
+	if (flag_assemble)
+		assemble(filename, out_name);
+	else if (flag_run)
+		run_binary(filename);
+	else if (flag_assemble_and_run){
+		char tmpfile[] = "/tmp/casXXXXXX";
+		mkstemp(tmpfile);
+		assemble(filename, tmpfile);
+		run_binary(tmpfile);
+		remove(tmpfile);
+	}else{
+		fprintf(stderr, "Invalid usage, please use -h to see supported arguments\n");
+		return 1;
 	}
 }
