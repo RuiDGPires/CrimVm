@@ -3,3 +3,4 @@
 *.txt
 *.bin
 a.out
+*.o
