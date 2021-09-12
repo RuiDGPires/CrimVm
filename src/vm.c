@@ -28,7 +28,8 @@ void run(Vm vm){
 				if ((check_msbit(vm->regs[op.args[0]]) || check_msbit(vm->regs[op.args[1]])) && !check_msbit(res))
 					vm->flags |= FLG_OV;
 
-				vm->regs[op.args[0]] = res;
+				if (op.args[0] != R0)
+					vm->regs[op.args[0]] = res;
 				vm->pc++;
 				break;
 			case OP_DUMP:
