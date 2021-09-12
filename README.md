@@ -9,7 +9,7 @@ Project is still very recent and code is slightly hammered..
 
 ## Example
 
-Using [example.cas](example.cas) as an example:
+Using [example.cas](tests/example.cas) as an example:
 
 First, assemble the text file into an object file
 
