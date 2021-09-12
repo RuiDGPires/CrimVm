@@ -1,5 +1,5 @@
 | OPERATION | ARGUMENTS | DESCRIPTION |
-| :---			| :----:		| :---				|
+| :---:			| :----:		| :---				|
 | MVI	| u8 REG, u32 val | Stores <val> in register <REG> |
 | MOV	| u8 REG1, u8 REG2 | Copies the value in REG2 to REG 1 |
 | ADD | u8 REG1, u8 REG2 | Adds the values in the registers and stores the result in REG1 |
