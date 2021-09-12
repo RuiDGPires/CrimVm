@@ -11,10 +11,12 @@ void run(Vm vm){
 		u32 res;
 		switch(op.code){
 			case OP_MVI:
+				if (op.args[0] == R0) break;
 				vm->regs[op.args[0]] = op.args[1];
 				vm->pc++;
 				break;
 			case OP_MOV:
+				if (op.args[0] == R0) break;
 				vm->regs[op.args[0]] = vm->regs[op.args[1]];
 				vm->pc++;
 				break;
@@ -38,6 +40,7 @@ void run(Vm vm){
 				vm->pc++;
 				break;
 			case OP_LOAD:
+				if (op.args[0] == R0) break;
 				vm->regs[op.args[0]] = vm->mem[vm->regs[op.args[1]]];
 				vm->pc++;
 				break;
@@ -46,6 +49,7 @@ void run(Vm vm){
 				vm->pc++;
 				break;
 			case OP_POP:
+				if (op.args[0] == R0) break;
 				vm->regs[op.args[0]] = vm_pop(vm);
 				vm->pc++;
 				break;
@@ -69,7 +73,7 @@ void run(Vm vm){
 
 				if (res == 0)
 					vm->flags |= FLG_ZERO;
-				
+
 				vm->pc++;
 				break;
 			default:
