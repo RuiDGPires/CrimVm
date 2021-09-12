@@ -11,13 +11,13 @@ void run(Vm vm){
 		u32 res;
 		switch(op.code){
 			case OP_MVI:
-				if (op.args[0] == R0) break;
-				vm->regs[op.args[0]] = op.args[1];
+				if (op.args[0] != R0)
+					vm->regs[op.args[0]] = op.args[1];
 				vm->pc++;
 				break;
 			case OP_MOV:
-				if (op.args[0] == R0) break;
-				vm->regs[op.args[0]] = vm->regs[op.args[1]];
+				if (op.args[0] != R0)
+					vm->regs[op.args[0]] = vm->regs[op.args[1]];
 				vm->pc++;
 				break;
 			case OP_ADD:
@@ -28,7 +28,7 @@ void run(Vm vm){
 				if ((check_msbit(vm->regs[op.args[0]]) || check_msbit(vm->regs[op.args[1]])) && !check_msbit(res))
 					vm->flags |= FLG_OV;
 
-				vm_push(res, vm);
+				vm->regs[op.args[0]] = res;
 				vm->pc++;
 				break;
 			case OP_DUMP:
@@ -40,8 +40,8 @@ void run(Vm vm){
 				vm->pc++;
 				break;
 			case OP_LOAD:
-				if (op.args[0] == R0) break;
-				vm->regs[op.args[0]] = vm->mem[vm->regs[op.args[1]]];
+				if (op.args[0] != R0)
+					vm->regs[op.args[0]] = vm->mem[vm->regs[op.args[1]]];
 				vm->pc++;
 				break;
 			case OP_PUSH:
@@ -49,8 +49,8 @@ void run(Vm vm){
 				vm->pc++;
 				break;
 			case OP_POP:
-				if (op.args[0] == R0) break;
-				vm->regs[op.args[0]] = vm_pop(vm);
+				if (op.args[0] != R0)
+					vm->regs[op.args[0]] = vm_pop(vm);
 				vm->pc++;
 				break;
 			case OP_SUB:
@@ -62,7 +62,8 @@ void run(Vm vm){
 				if (res == 0)
 					vm->flags |= FLG_ZERO;
 				
-				vm_push(res, vm);
+				if (op.args[0] != R0)
+					vm->regs[op.args[0]] = res;
 				vm->pc++;
 				break;
 			case OP_CMP:
