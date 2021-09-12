@@ -13,7 +13,7 @@ Using [example.txt](example.txt) as an example:
 
 First, assemble the text file into an object file
 
->./a.out example.as example.o
+>./a.out example.txt example.o
 
 Then, run the file
 
