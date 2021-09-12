@@ -1,5 +1,5 @@
 | OPERATION | ARGUMENTS | DESCRIPTION |
-| :---			| :----:		| ---:				|
+| :---			| :----:		| :---				|
 |	OP_MVI	| u8 REG, u32 val | Stores <val> in register <REG> |
 |	OP_MOV	| u8 REG1, u8 REG2 | Copies the value in REG2 to REG 1 |
 |	OP_ADD | u8 REG, u8 REG | Adds the values in the registers and pushes the result |
