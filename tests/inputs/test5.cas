@@ -1,0 +1,10 @@
+MVI R1 5
+MVI R2 3
+
+SUB R1 R2
+
+PSH R1
+PSH R2
+
+DMP
+DMP

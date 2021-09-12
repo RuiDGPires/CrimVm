@@ -33,7 +33,7 @@ def printSucess(string):
 
 print(BOLD, HEADER)
 print("****************")
-print("TESTING MIDILIB ")
+print("TESTING CRIMVM ")
 print("****************")
 print(ENDC)
 
