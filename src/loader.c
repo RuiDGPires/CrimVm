@@ -1,9 +1,11 @@
 // Implementation of loader and linker
 
 #include "vm.h"
-
+#include <assert.h>
+#define CRIMSEMBLY_TAG 0x4352494d // CRIM
 #define LOAD_BUFFER_SIZE VM_PROG_MEM_SIZE
 
+// NEEDS TO BE CHANGED!!!!!!!!!!11
 void load(Vm vm, FILE *file){
 	u8 buffer[LOAD_BUFFER_SIZE];
 
@@ -12,7 +14,13 @@ void load(Vm vm, FILE *file){
 
 	vm->prog_length = 0;
 
-	for (u32 p = 0; p < c;){
+	assert(buffer[0] == (u8) ((u32) CRIMSEMBLY_TAG >> 3*8) & 0xFF);
+	assert(buffer[1] == (u8) ((u32) CRIMSEMBLY_TAG >> 2*8) & 0xFF);
+	assert(buffer[2] == (u8) ((u32) CRIMSEMBLY_TAG >> 1*8) & 0xFF);
+	assert(buffer[3] == (u8) ((u32) CRIMSEMBLY_TAG) & 0xFF);
+
+
+	for (u32 p = 4; p < c;){
 		// Get the location to store the new operation and increment program count immediately
 		Operation *OP = &(vm->program[(vm->prog_length)++]);
 		OP->code = buffer[p++];
@@ -170,6 +178,7 @@ int expect_type(int type, int *p, char buffer[], int *p_out,  u8 out_buffer[]){
 	}
 }
 
+// NEEDS TO BE CHANGED!!!!!!!!!!11
 int link(char fin[], char fout[]){
 	FILE *in = fopen(fin, "r");	
 	char buffer[LINKER_BUFFER_SIZE];
@@ -199,6 +208,13 @@ int link(char fin[], char fout[]){
 	
 
 	FILE *out = fopen(fout, "wb");
+
+	// WRITE FILE TAG
+	u8 tag_buff[4];
+	for (int i = 0; i < 4; i++){
+		tag_buff[i] = ((u32) CRIMSEMBLY_TAG >> (3 - i)*8 ) & 0xFF;
+	}
+	fwrite(tag_buff, sizeof(u8), 4, out);
 
 	c = fwrite(out_buffer, sizeof(u8), p_out, out);
 
