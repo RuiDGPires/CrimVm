@@ -22,7 +22,12 @@ typedef uint8_t bool;
 
 #define OP_MAX_ARGS 2
 
-enum op_code {OP_MVI = 0, OP_MOV, OP_ADD, OP_DUMP, OP_STORE, OP_LOAD, OP_PUSH, OP_POP};
+enum op_code {OP_MVI = 0, OP_MOV, OP_ADD, OP_DUMP, OP_STORE, OP_LOAD, OP_PUSH, OP_POP, OP_SUB, OP_CMP};
+
+enum flags {FLG_ZERO = 1 << 0,
+						FLG_NEG = 1 << 1,
+					 	FLG_OV = 1 << 2,
+						};
 
 typedef struct vm_s *Vm;
 
@@ -61,6 +66,7 @@ typedef struct vm_s {
 	u32 mem[VM_MEM_SIZE];
 
 	u32 regs[R_COUNT];
+	u8 flags;
 	Driver driver;
 
 	Vm parent;
