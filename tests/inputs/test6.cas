@@ -1,0 +1,35 @@
+MVI R1 4
+MVI R2 6
+
+PSH R2
+
+SUB R2 R1
+
+POP R1
+
+STORE m[R2] R1
+
+MVI R1 1
+
+SUB R2 R1
+
+MVI R1 90
+
+STORE m[R2] R1
+
+MVI R1 1
+
+ADD R2 R1
+
+LOAD R3 m[R2]
+
+SUB R2 R1
+
+LOAD R2 m[R2]
+
+PSH R2
+PSH R3
+
+DMP
+DMP
+
