@@ -22,17 +22,27 @@ void errCheck(int e){
 	else return;
 }
 
-int main(int argc, char *argv[]){
-	if (argc != 2) return 1;
-
+void run_binary(char file_path[]){
 	Vm_ vm;
 	errCheck(vm_init(&vm));
-	errCheck(vm_load(&vm, argv[1]));
+	errCheck(vm_load(&vm, file_path));
 
 	// Pass the control to the VM
 	vm.driver.run(&vm);
 
 	errCheck(vm_destroy(&vm));
+}
 
-	return 0;
+void assemble(char fin[], char fout[]){
+	link(fin, fout);
+}
+
+int main(int argc, char *argv[]){
+	switch (argc){
+		case 2:
+		 run_binary(argv[1]);
+		 break;
+		case 3:
+		 assemble(argv[1], argv[2]);
+	}
 }

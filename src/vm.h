@@ -22,6 +22,8 @@ typedef uint8_t bool;
 
 #define OP_MAX_ARGS 2
 
+enum op_code {OP_MVI = 0, OP_MOV, OP_ADD, OP_DUMP, OP_STORE, OP_LOAD, OP_PUSH, OP_POP};
+
 typedef struct vm_s *Vm;
 
 typedef void (*f_drv_run)(Vm); 
@@ -70,5 +72,8 @@ int NNULL vm_destroy(Vm);
 int NNULL vm_load(Vm, char *);
 static void vm_push(u32, Vm);
 static u32 vm_pop(Vm);
+
+void loader_init(Loader *, Vm);
+int link(char *, char *);
 
 #endif

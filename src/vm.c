@@ -1,7 +1,6 @@
 #include "vm.h"
 #include <errno.h>
 
-enum op_code {OP_MVI = 0, OP_MOV, OP_ADD, OP_DUMP, OP_STORE, OP_LOAD, OP_PUSH, OP_POP};
 
 void run(Vm vm){
 	while(vm->pc < vm->prog_length){
@@ -54,57 +53,8 @@ u32 vm_pop(Vm vm){
 	return vm->mem[vm->regs[SP]++]; 
 }
 
-#define LOAD_BUFFER_SIZE VM_PROG_MEM_SIZE
-
-void load(Vm vm, FILE *file){
-	u8 buffer[LOAD_BUFFER_SIZE];
-
-	u32 c = (u32) fread(buffer, sizeof(u8), LOAD_BUFFER_SIZE, file);	
-	vm->loader.is_at_eof = c < LOAD_BUFFER_SIZE;
-
-	vm->prog_length = 0;
-
-	for (u32 p = 0; p < c;){
-		// Get the location to store the new operation and increment program count immediately
-		Operation *OP = &(vm->program[(vm->prog_length)++]);
-		OP->code = buffer[p++];
-		switch (OP->code){
-			case OP_MVI:
-				OP->args[0] = buffer[p++];	
-				OP->args[1] = 0; 
-				for (int i = 0; i < 4; i++)
-					OP->args[1] = (OP->args[1] << i * 8) | buffer[p++];	
-				break;
-			case OP_MOV:
-				OP->args[0] = buffer[p++];
-				OP->args[1] = buffer[p++];
-				break;
-			case OP_ADD:
-				OP->args[0] = buffer[p++];
-				OP->args[1] = buffer[p++];
-				break;
-			case OP_DUMP:
-				break;
-			case OP_STORE:
-				OP->args[0] = buffer[p++];
-				OP->args[1] = buffer[p++];
-				break;
-			case OP_LOAD:
-				OP->args[0] = buffer[p++];
-				OP->args[1] = buffer[p++];
-				break;
-			case OP_PUSH:
-				OP->args[0] = buffer[p++];
-				break;
-			case OP_POP:
-				OP->args[0] = buffer[p++];
-				break;
-		}
-	}	
-}
-
 int vm_init(Vm vm){
-	vm->loader = (Loader){.load = load, .file = NULL, .vm = vm, .is_at_eof = FALSE};
+	loader_init(&(vm->loader), vm);
 	vm->pc = 0;
 	vm->prog_length = 0;
 	vm->parent = NULL;
@@ -131,3 +81,4 @@ int vm_load(Vm vm, char filename[]){
 	vm->loader.load(vm, file);
 	return 0;
 }
+
