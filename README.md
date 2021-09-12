@@ -13,7 +13,7 @@ Using [example.cas](example.cas) as an example:
 
 First, assemble the text file into an object file
 
->./a.out example.txt example.o
+>./a.out example.cas example.o
 
 Then, run the file
 
