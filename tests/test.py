@@ -66,7 +66,7 @@ for directory in DIRS:
         out_file = f"{dir_path}/outputs/{directory}/{filename_no_ext}.out"
 
         # EXECUTE PROGRAM
-        result = subprocess.run([EXE, "-ar", file], stdout = subprocess.PIPE )
+        result = subprocess.run([EXE, "-ar", file], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         ret_code = result.returncode 
 
         success = ret_code == 0 
