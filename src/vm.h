@@ -73,14 +73,13 @@ typedef struct vm_s {
 } Vm_;
 
 // Returns error code
-int NNULL vm_init(Vm);
-int NNULL vm_destroy(Vm);
-int NNULL vm_load(Vm, char *);
-static void NNULL vm_push(u32, Vm);
-static NNULL u32 vm_pop(Vm);
+void NNULL vm_init(Vm);
+void NNULL vm_destroy(Vm);
+void NNULL vm_load(Vm, char *);
+void NNULL vm_push(u32, Vm);
+u32 NNULL vm_pop(Vm);
 
 void NNULL loader_init(Loader *, Vm);
-int link(char *, char *);
-int link_F(char *, FILE *);
+void link(char *, char *);
 
 #endif

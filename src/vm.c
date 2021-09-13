@@ -1,5 +1,5 @@
 #include "vm.h"
-#include <errno.h>
+#include "util.h"
 
 u8 check_msbit(u32 val){
 	return (val & 0x80000000) != 0;
@@ -79,7 +79,7 @@ void run(Vm vm){
 				vm->pc++;
 				break;
 			default:
-				printf("Unkown Operation: %d\n", op.code);
+				THROW_ERROR("Unkown Operation \'%d\'", op.code);
 				return;
 		}	
 	} 
@@ -93,7 +93,7 @@ u32 vm_pop(Vm vm){
 	return vm->mem[vm->regs[SP]++]; 
 }
 
-int vm_init(Vm vm){
+void vm_init(Vm vm){
 	loader_init(&(vm->loader), vm);
 	vm->pc = 0;
 	vm->prog_length = 0;
@@ -105,22 +105,19 @@ int vm_init(Vm vm){
 	vm->regs[R0] = 0;
 	vm->flags = 0;
 	vm->driver = (Driver){.run = run, .vm = vm};
-	return 0;
 }
 
-int vm_destroy(Vm vm){
+void vm_destroy(Vm vm){
 	if (vm->loader.file != NULL)
 		fclose(vm->loader.file);
-	return 0;
 }
 
-int vm_load(Vm vm, char filename[]){
+void vm_load(Vm vm, char filename[]){
 	FILE *file = fopen(filename, "r");
 
-	if (file == NULL) return errno; 
+	if (file == NULL) THROW_ERROR("An error occured while trying to open the file \'%s\'", filename);
 
 	vm->loader.file = file;
 	vm->loader.load(vm, file);
-	return 0;
 }
 

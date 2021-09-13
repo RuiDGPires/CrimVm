@@ -1,5 +1,6 @@
 #include "defs.h"
 #include "vm.h"
+#include "util.h"
 
 #include <stdio.h>
 
@@ -7,30 +8,15 @@
 #include <errno.h>
 #include <string.h>
 
-#define ABORT_ON_ERROR
-
-void errCheck(int e){
-	if (e){
-		fflush(stdout);
-		fprintf(stderr, "An error occured: %s\n", strerror(e));
-#ifdef ABORT_ON_ERROR
-	exit(e);
-#else
-	return;
-#endif		
-	}
-	else return;
-}
-
 void run_binary(char file_path[]){
 	Vm_ vm;
-	errCheck(vm_init(&vm));
-	errCheck(vm_load(&vm, file_path));
+	vm_init(&vm);
+	vm_load(&vm, file_path);
 
 	// Pass the control to the VM
 	vm.driver.run(&vm);
 
-	errCheck(vm_destroy(&vm));
+	vm_destroy(&vm);
 }
 
 void assemble(char fin[], char fout[]){
@@ -52,26 +38,17 @@ int check_file_extension(char filename[], char extension[]){
 
 int main(int argc, char *argv[]){
 	bool flag_outfile = FALSE, flag_assemble = FALSE, flag_run = FALSE, flag_assemble_and_run = FALSE;
-	char *out_name;
-	char *filename;
+	char *out_name = NULL;
+	char *filename = NULL;
 
-	if (argc == 1){
-		fprintf(stderr, "Invalid usage, please use -h to see supported arguments\n");
-		return 1;
-	}
+	if (argc == 1)
+		THROW_ERROR("Invalid usage, please use -h to see supported arguments");
 
-	if (argc == 2){
-		if(check_file_extension(argv[1], ".o")){
+	if (argc == 2)
 			run_binary(argv[1]);
-			return 0;
-		}else{
-			fprintf(stderr, "Please provide an object file to run\n");
-			return 1;
-		}
-	}
 
 	bool request_cas_file = FALSE, request_run_file = FALSE, request_out_file = FALSE;
-	int c;
+	
 	// CANT HAVE -o and -r at the same time
 	for (int i = 1; i < argc; i++){
 			if (request_cas_file) {
@@ -109,22 +86,17 @@ int main(int argc, char *argv[]){
 				continue;
 			}
 
-			fprintf(stderr, "Invalid usage, please use -h to see supported arguments\n");
-			return 1;
+			THROW_ERROR("Invalid usage, please use -h to see supported arguments");
 	}
 	assert(!request_out_file && !request_cas_file && !request_run_file);		
 
-	if (flag_outfile && flag_run){
-		fprintf(stderr, "Can't have -o and -r at the same time\n");
-		return 1;
-	}
-	if (flag_assemble && flag_run){
-		fprintf(stderr, "Can't have -a and -r at the same time, use -ar instead\n");
-		return 1;
-	}
+	if (flag_outfile && flag_run)
+		THROW_ERROR("Can't have -o and -r at the same time");
+	if (flag_assemble && flag_run)
+		THROW_ERROR("Can't have -a and -r at the same time, use -ar instead");
 
 	int name_length = strlen(filename);
-	char new_name[name_length];
+	char new_name[name_length -1];
 	if ((flag_assemble || flag_assemble_and_run) && !flag_outfile){
 		strcpy(new_name, filename);
 		new_name[name_length-3] = 'o';
@@ -138,12 +110,10 @@ int main(int argc, char *argv[]){
 		run_binary(filename);
 	else if (flag_assemble_and_run){
 		char tmpfile[] = "/tmp/casXXXXXX";
-		mkstemp(tmpfile);
+		if (mkstemp(tmpfile) < 0) THROW_ERROR("Error creating temporary file");
 		assemble(filename, tmpfile);
 		run_binary(tmpfile);
 		remove(tmpfile);
-	}else{
-		fprintf(stderr, "Invalid usage, please use -h to see supported arguments\n");
-		return 1;
-	}
+	}else
+		THROW_ERROR("Invalid usage, please use -h to see supported arguments");
 }
