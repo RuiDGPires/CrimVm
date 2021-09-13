@@ -3,19 +3,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-
-#include "defs.h"
-
-typedef int32_t i32;
-typedef uint32_t u32;
-typedef uint8_t u8;
-
-// Smallest size possible for bool
-typedef uint8_t bool;
-
-#define TRUE 1
-#define FALSE 0
-
+#include "defs.h" 
 
 #define VM_PROG_MEM_SIZE 1024
 #define VM_MEM_SIZE 1024
