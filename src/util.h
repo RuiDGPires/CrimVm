@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include "defs.h"
 
 #ifdef DEBUG
 #ifndef __FUNCTION_NAME__ 
