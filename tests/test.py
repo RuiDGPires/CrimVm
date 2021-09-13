@@ -23,7 +23,10 @@ UNDERLINE = '\033[4m'
 dir_path = dir_path = os.path.dirname(os.path.realpath(__file__))
 
 EXE = f"{dir_path}/../a.out"
-INPUT_FILES = glob(f"{dir_path}/inputs/*")
+
+DIRS = next(os.walk(f"{dir_path}/inputs/."))[1]
+
+
 
 def printError(string):
     print(FAIL + BOLD + string + ENDC)
@@ -38,30 +41,58 @@ print("****************")
 print(ENDC)
 
 ALL_TESTS_PASSED = True
-for file in INPUT_FILES:
-    # GET FILE NAME
-    filename = os.path.basename(file)
-    filename_no_ext = os.path.splitext(filename)[0] 
-    out_file = f"{dir_path}/outputs/{filename_no_ext}.out"
+for directory in DIRS:
+    if not os.path.exists(f"{dir_path}/inputs/{directory}/section.txt"): continue
 
-    # EXECUTE PROGRAM
-    result = subprocess.run([EXE, "-ar", file], stdout = subprocess.PIPE )
-    ret_code = result.returncode 
+    section_tests_passed = True
+    INPUT_FILES = sorted(glob(f"{dir_path}/inputs/{directory}/*"))
+    t = str.maketrans("\n", " ") 
 
-    success = ret_code == 0 
+    section_name = ""
+    with open(f"{dir_path}/inputs/{directory}/section.txt") as f:
+        section_name = f.read().translate(t) 
 
-    passed = False 
+    if section_name[-1] == " ":
+        section_name = section_name[:-1]
+    
+    section_text = ""
 
-    if success:
-        with open(out_file, "r") as f:
-            file_text = f.read();
-        passed  = file_text == result.stdout.decode('ascii')
+    for file in INPUT_FILES:
+        # GET FILE NAME
+        filename = os.path.basename(file)
+        if (filename == "section.txt"): continue
 
-    if not passed:
-        print(FAIL, "fail\t", ENDC, ":\t", filename)
-        ALL_TESTS_PASSED = False
+        filename_no_ext = os.path.splitext(filename)[0] 
+        out_file = f"{dir_path}/outputs/{directory}/{filename_no_ext}.out"
+
+        # EXECUTE PROGRAM
+        result = subprocess.run([EXE, "-ar", file], stdout = subprocess.PIPE )
+        ret_code = result.returncode 
+
+        success = ret_code == 0 
+
+        passed = False 
+
+        if success:
+            with open(out_file, "r") as f:
+                file_text = f.read();
+            passed  = file_text == result.stdout.decode('ascii')
+
+        if not passed:
+            section_text += FAIL + "fail " + ENDC + ":\t" + filename + "\n"
+            ALL_TESTS_PASSED = False
+            section_tests_passed = False
+        else:
+            section_text += OKGREEN + "ok   " + ENDC + ":\t" + filename + "\n" 
+   
+    sec_color = ""
+    if section_tests_passed:
+        sec_color = OKGREEN
     else:
-        print(OKGREEN, "ok\t", ENDC, ":\t", filename) 
+        sec_color = FAIL
+
+    print(WARNING, BOLD, f"  SECTION [", ENDC + sec_color, section_name, ENDC + WARNING + BOLD, "]\n", ENDC)
+    print(section_text)
 
 if ALL_TESTS_PASSED:
     printSucess("\nALL TESTS PASSED!")
