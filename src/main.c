@@ -36,8 +36,10 @@ int main(int argc, char *argv[]){
 	if (argc == 1)
 		THROW_ERROR("Invalid usage, please use -h to see supported arguments");
 
-	if (argc == 2)
+	if (argc == 2){
 			run_binary(argv[1]);
+			return 0;
+	}
 
 	bool request_cas_file = FALSE, request_run_file = FALSE, request_out_file = FALSE;
 	
