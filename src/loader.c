@@ -1,7 +1,8 @@
 // Implementation of loader and linker
 
 #include "vm.h"
-#include <assert.h>
+#include "util.h"
+
 #define CRIMSEMBLY_TAG 0x4352494d // CRIM
 #define LOAD_BUFFER_SIZE VM_PROG_MEM_SIZE
 
@@ -14,10 +15,10 @@ void load(Vm vm, FILE *file){
 
 	vm->prog_length = 0;
 
-	assert(buffer[0] == (u8) ((u32) CRIMSEMBLY_TAG >> 3*8) & 0xFF);
-	assert(buffer[1] == (u8) ((u32) CRIMSEMBLY_TAG >> 2*8) & 0xFF);
-	assert(buffer[2] == (u8) ((u32) CRIMSEMBLY_TAG >> 1*8) & 0xFF);
-	assert(buffer[3] == (u8) ((u32) CRIMSEMBLY_TAG) & 0xFF);
+	ASSERT((buffer[0] == (u8) ((u32) CRIMSEMBLY_TAG >> 3*8)) & 0xFF, "Invalid file");
+	ASSERT((buffer[1] == (u8) ((u32) CRIMSEMBLY_TAG >> 2*8)) & 0xFF, "Invalid file");
+	ASSERT((buffer[2] == (u8) ((u32) CRIMSEMBLY_TAG >> 1*8)) & 0xFF, "Invalid file");
+	ASSERT((buffer[3] == (u8) ((u32) CRIMSEMBLY_TAG)) & 0xFF, "Invalid file");
 
 
 	for (u32 p = 4; p < c;){
@@ -91,8 +92,8 @@ int get_word(int *p, char buffer[], char word_buffer[]){
 		if (buffer[*p] == ','){
 			if (c) break;
 			else {
-				word_buffer[0] == buffer[*p];
-				word_buffer[1] == '\0';
+				word_buffer[0] = buffer[*p];
+				word_buffer[1] = '\0';
 				*p += 1;
 				return 1;
 			}
@@ -156,31 +157,31 @@ int parse_op(char word[], int *op){
 		*op = OP_CMP;
 		return MAKE_ARG2(ARG_REG, ARG_REG);	
 	}
-	return -1; // ERROR
+	THROW_ERROR("Unkown operation: %s", word);
 }
 
 // TODO : BETTER ERROR HANDLING
 
-#include <assert.h>
 #include <stdlib.h>
-int expect_type(int type, int *p, char buffer[], int *p_out,  u8 out_buffer[]){
+void expect_type(int type, int *p, char buffer[], int *p_out,  u8 out_buffer[]){
 	char word[MAX_WORD_SIZE];
 	get_word(p, buffer, word);
 	u32 val;
 	switch (type){
 		case ARG_REG:
-			assert(word[0] == 'R');
-			assert(word[1] >= '0' && word[1] <= '9');
-			assert(word[1] - '0' < R_COUNT);
+			ASSERT(word[0] == 'R', "Unexpected Token: %c", word[0]);
+			ASSERT(word[1] >= '0' && word[1] <= '9', "Unexpected Token: %c", word[1]);
+			ASSERT(word[1] - '0' < R_COUNT, "Invalid register: R%d", word[1]- '0');
 			out_buffer[*p_out] = (u8) (word[1] - '0');	
 			*p_out += 1;
 			break;
 		case ARG_MEM:
-			assert(word[0] == 'm');
-			assert(word[1] == '[');
-			assert(word[2] == 'R');
-			assert(word[3] >= '0' && word[3] - '0' < R_COUNT);
-			assert(word[4] == ']');
+			ASSERT(word[0] == 'm', "Unexpected Token: %c", word[0]);
+			ASSERT(word[1] == '[', "Unexpected Token: %c", word[1]);
+			ASSERT(word[2] == 'R', "Unexpected Token: %c", word[2]);
+			ASSERT(word[3] >= '0' && word[3] <= '9', "Unexpected Token: %c", word[3]);
+			ASSERT(word[3] - '0' < R_COUNT, "Invalid register: R%d", word[3]-'0');
+			ASSERT(word[4] == ']', "Unexpected Token: %c", word[4]);
 			out_buffer[*p_out] = (u8) (word[3] - '0');
 			*p_out += 1;
 			break;
@@ -195,7 +196,7 @@ int expect_type(int type, int *p, char buffer[], int *p_out,  u8 out_buffer[]){
 }
 
 // NEEDS TO BE CHANGED!!!!!!!!!!
-int link(char fin[], char fout[]){
+void link(char fin[], char fout[]){
 	FILE *in = fopen(fin, "r");	
 	char buffer[LINKER_BUFFER_SIZE];
 
@@ -214,7 +215,7 @@ int link(char fin[], char fout[]){
 		int args = parse_op(word, &op_code);
 		out_buffer[p_out++] = op_code; 
 
-		assert(args >= 0);
+		ASSERT(args >= 0, "Unkown error");
 
 		while(args != 0){
 			expect_type(args % 10, &p, buffer, &p_out, out_buffer);	
@@ -233,10 +234,6 @@ int link(char fin[], char fout[]){
 	c = fwrite(out_buffer, sizeof(u8), p_out, out);
 
 	fclose(out);	
-	return 0;
-}
-
-int link_F(char fin[], FILE *out){
 }
 
 void loader_init(Loader *loader, Vm vm){
