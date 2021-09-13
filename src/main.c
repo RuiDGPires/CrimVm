@@ -1,12 +1,8 @@
-#include "defs.h"
 #include "vm.h"
 #include "util.h"
 
 #include <stdio.h>
-
 #include <stdlib.h>
-#include <errno.h>
-#include <string.h>
 
 void run_binary(char file_path[]){
 	Vm_ vm;
@@ -23,8 +19,6 @@ void assemble(char fin[], char fout[]){
 	link(fin, fout);
 }
 
-#include <string.h>
-
 // Check if file extension is .cas
 int check_file_extension(char filename[], char extension[]){
 	int length = strlen(filename);
@@ -33,8 +27,6 @@ int check_file_extension(char filename[], char extension[]){
 	char *last_chars = &(filename[length-ext_len]);
 	return strcmp(last_chars, extension) == 0;
 }
-
-#include <assert.h>
 
 int main(int argc, char *argv[]){
 	bool flag_outfile = FALSE, flag_assemble = FALSE, flag_run = FALSE, flag_assemble_and_run = FALSE;
@@ -52,7 +44,7 @@ int main(int argc, char *argv[]){
 	// CANT HAVE -o and -r at the same time
 	for (int i = 1; i < argc; i++){
 			if (request_cas_file) {
-				assert(check_file_extension(argv[i], ".cas"));
+				ASSERT(check_file_extension(argv[i], ".cas"), "File must have .cas extension to be assembled");
 				filename = argv[i];
 				request_cas_file = FALSE;
 				continue;
@@ -88,7 +80,7 @@ int main(int argc, char *argv[]){
 
 			THROW_ERROR("Invalid usage, please use -h to see supported arguments");
 	}
-	assert(!request_out_file && !request_cas_file && !request_run_file);		
+	ASSERT(!request_out_file && !request_cas_file && !request_run_file, "Please provide a file name");		
 
 	if (flag_outfile && flag_run)
 		THROW_ERROR("Can't have -o and -r at the same time");
