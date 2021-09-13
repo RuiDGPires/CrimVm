@@ -84,7 +84,7 @@ int main(int argc, char *argv[]){
 	}
 	ASSERT(!request_out_file && !request_cas_file && !request_run_file, "Please provide a file name");		
 
-	if (flag_outfile && flag_run)
+	if (flag_outfile && (flag_run || flag_assemble_and_run))
 		THROW_ERROR("Can't have -o and -r at the same time");
 	if (flag_assemble && flag_run)
 		THROW_ERROR("Can't have -a and -r at the same time, use -ar instead");
