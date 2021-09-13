@@ -34,11 +34,36 @@ def printError(string):
 def printSucess(string):
     print(OKGREEN + BOLD + string + ENDC)
 
+def printProgressBar(n, progress):
+    percent = round((progress/n) * 100)
+    BAR_SIZE = 20
+    x = (progress * BAR_SIZE) // n
+    color = ""
+
+    if percent < 50:
+        color = FAIL
+    elif percent != 100:
+        color = WARNING
+    else:
+        color = OKGREEN
+
+    text = "[" + color
+    for i in range(x):
+        text += "#"
+    for i in range(BAR_SIZE - x):
+        text += "-"
+
+    text += ENDC + f"] ({color}{percent}%{ENDC})"
+    print(text)
+
 print(BOLD, HEADER)
 print("****************")
 print("TESTING CRIMVM ")
 print("****************")
 print(ENDC)
+
+n_files = 0
+n_files_passed = 0
 
 ALL_TESTS_PASSED = True
 for directory in DIRS:
@@ -62,6 +87,7 @@ for directory in DIRS:
         filename = os.path.basename(file)
         if (filename == "section.txt"): continue
 
+        n_files += 1
         filename_no_ext = os.path.splitext(filename)[0] 
         out_file = f"{dir_path}/outputs/{directory}/{filename_no_ext}.out"
 
@@ -84,6 +110,7 @@ for directory in DIRS:
             section_tests_passed = False
         else:
             section_text += OKGREEN + "ok   " + ENDC + ":\t" + filename + "\n" 
+            n_files_passed += 1 
    
     sec_color = ""
     if section_tests_passed:
@@ -94,7 +121,8 @@ for directory in DIRS:
     print(WARNING, BOLD, f"  SECTION [", ENDC + sec_color, section_name, ENDC + WARNING + BOLD, "]\n", ENDC)
     print(section_text)
 
+print("\n-------\n")
+printProgressBar(n_files, n_files_passed)
+
 if ALL_TESTS_PASSED:
-    printSucess("\nALL TESTS PASSED!")
-else:
-    printError("\nSOME TESTS FAILED")
+    printSucess("ALL TESTS PASSED!\n")
