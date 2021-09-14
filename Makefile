@@ -8,7 +8,7 @@ CFLAGS=
 default: debug
 
 $(TARGET): $(C_FILES) $(H_FILES)
-	@$(CC) -Wall $(CFLAGS) $^ -o $@
+	@$(CC) -Wall $(CFLAGS) -pthread $^ -o $@
 
 debug: CFLAGS += -O0 -D DEBUG -g
 debug: $(TARGET)
