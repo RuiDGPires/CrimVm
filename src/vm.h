@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "defs.h" 
 
-#define VM_PROG_MEM_SIZE 1024
+#define VM_PROG_MEM_SIZE 16384 
 #define VM_MEM_SIZE 1024
 
 #define OP_MAX_ARGS 2
