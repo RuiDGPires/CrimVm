@@ -38,4 +38,5 @@
 	else THROW_ERROR(__VA_ARGS__);\
 	}while(0)
 
+#define CRIMSEMBLY_TAG 0x4352494d // CRIM
 #endif
