@@ -15,9 +15,6 @@ void run_binary(char file_path[]){
 	vm_destroy(&vm);
 }
 
-void assemble(char fin[], char fout[]){
-	link(fin, fout);
-}
 
 // Check if file extension is .cas
 int check_file_extension(char filename[], char extension[]){

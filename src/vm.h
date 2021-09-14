@@ -68,6 +68,6 @@ void NNULL vm_push(u32, Vm);
 u32 NNULL vm_pop(Vm);
 
 void NNULL loader_init(Loader *, Vm);
-void link(char *, char *);
+void assemble(char *, char *);
 
 #endif
