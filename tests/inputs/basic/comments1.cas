@@ -1,0 +1,9 @@
+MVI R1 90 ; Move 90 to R1
+ADD R1 R1 ; Duplicate
+
+MVI R2 100
+SUB R1 R2
+
+PSH R1		; Print R1
+DMP
+
