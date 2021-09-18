@@ -91,6 +91,7 @@ bool is_whitespace(char c){
 #define MAX_WORD_SIZE 32 
 int get_word(char *word_buffer){
 	u32 p = 0;
+	bool is_comment = FALSE;
 
 	while(1){
 		mutexLock(&reading_mutex);
@@ -114,7 +115,13 @@ int get_word(char *word_buffer){
 		signalCondition(&reading_can_produce);
 		mutexUnlock(&reading_mutex);
 
-		if (c == 0 || c == '\0' || is_whitespace(c)) 
+		// Comments
+		if (is_comment)
+			is_comment = c != '\n';
+		else
+			is_comment = c == ';';
+
+		if (c == 0 || c == '\0' || is_whitespace(c) || is_comment) 
 			if (p || c == '\0'){
 				word_buffer[p] = '\0';
 				break;
@@ -216,7 +223,7 @@ void expect_type(int type){
 		case ARG_VAL:
 			val = (u32) atoi(word); 
 			for (int i = 3; i >= 0; i--)
-				write_to_buffer(((u8) val >> (8 * i)) & 0xFF);
+				write_to_buffer((val >> (8 * i)) & 0xFF);
 			break;
 	}
 }
