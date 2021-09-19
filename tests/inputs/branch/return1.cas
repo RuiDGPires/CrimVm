@@ -1,0 +1,17 @@
+MVI R1 100
+
+JMP foo
+
+PSH R1
+
+JMP end
+
+
+foo:
+MVI R1 900
+RET
+
+MVI R1 20
+
+end:
+DMP

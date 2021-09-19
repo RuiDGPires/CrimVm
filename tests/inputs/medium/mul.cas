@@ -1,0 +1,45 @@
+MVI R1 5
+PSH R1
+
+MVI R1 4
+PSH R1
+
+JMP mul
+
+BR end
+
+
+
+
+
+
+
+
+
+
+
+
+; Takes x and y and returns x * y
+; Arguments and return value are handed through the stack
+mul:
+POP R1 ; get the arguments
+POP R2
+
+MOV R4 R0
+MVI R3 1
+
+loop:
+CMP R1 R0
+BR.Z ret
+ADD R4 R2
+SUB R1 R3
+
+BR loop
+
+
+ret:
+PSH R4
+RET
+
+end:
+DMP
