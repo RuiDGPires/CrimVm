@@ -56,15 +56,10 @@ def printProgressBar(n, progress):
     text += ENDC + f"] ({color}{percent}%{ENDC})"
     print(text)
 
-print(BOLD, HEADER)
-print("****************")
-print("TESTING CRIMVM ")
-print("****************")
-print(ENDC)
-
 n_files = 0
 n_files_passed = 0
 
+print()
 ALL_TESTS_PASSED = True
 for directory in DIRS:
     if not os.path.exists(f"{dir_path}/inputs/{directory}/section.txt"): continue
