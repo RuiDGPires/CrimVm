@@ -23,4 +23,8 @@ Output:
 
 >60
 
+**or**
+
+Simply assemble and run (generates no files)
+>./a.out -ar example.cas
 
