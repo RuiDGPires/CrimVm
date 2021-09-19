@@ -228,6 +228,12 @@ static int parse_op(char word[], int *op){
 	else if (strcmp(word, "NOT") == 0){
 		*op = OP_NOT;
 		return MAKE_ARG(ARG_REG);	
+	}else if (strcmp(word, "SHR") == 0){
+		*op = OP_SHR;
+		return MAKE_ARG(ARG_REG);		
+	}else if (strcmp(word, "SHL") == 0){
+		*op = OP_SHL;
+		return MAKE_ARG(ARG_REG);		
 	}else if (strcmp(word, "END") == 0){
 		*op = OP_END;
 		return MAKE_ARG(ARG_NONE);		

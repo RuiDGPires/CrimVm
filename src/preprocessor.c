@@ -186,6 +186,12 @@ static void parse_word(char word[], u32 *pc){
 	}
 	else if (strcmp(word, "NOT") == 0){
 		(*pc)++;
+	}else if (strcmp(word, "SHR") == 0){
+		(*pc)++;
+	}else if (strcmp(word, "SHL") == 0){
+		(*pc)++;
+	}else if (strcmp(word, "END") == 0){
+		(*pc)++;
 	}else if (strcmp(word, "_start:")  == 0){
 		ASSERT(start_is_defined == FALSE, "_start can only be defined once");
 		start = *pc;
