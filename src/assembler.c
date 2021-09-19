@@ -228,6 +228,9 @@ static int parse_op(char word[], int *op){
 	else if (strcmp(word, "NOT") == 0){
 		*op = OP_NOT;
 		return MAKE_ARG(ARG_REG);	
+	}else if (strcmp(word, "END") == 0){
+		*op = OP_END;
+		return MAKE_ARG(ARG_NONE);		
 	} else{
 		// SKIP LABELS
 		u32 last_char_index = strlen(word) - 1;
@@ -417,6 +420,13 @@ static void *writeFile(void *arg){
 							(CRIMSEMBLY_TAG >> 0*8) & 0xFF};
 
 	fwrite(tag, sizeof(u8), 4, file);
+
+	u32 start = ht_get(symb_table, "_start");
+	u8 start_vec[4];
+	for (int i = 0; i < 4; i++)
+		start_vec[3 - i] = (start >> i * 8) & 0xFF;
+
+	fwrite(start_vec, sizeof(u8), 4, file);
 
 	u8 tmp[BUFFER_SIZE];
 

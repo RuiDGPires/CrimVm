@@ -26,7 +26,12 @@ void load(Vm vm, FILE *file){
 	ASSERT((buffer[2] == (u8) ((u32) CRIMSEMBLY_TAG >> 1*8)) & 0xFF, "Invalid file");
 	ASSERT((buffer[3] == (u8) ((u32) CRIMSEMBLY_TAG)) & 0xFF, "Invalid file");
 
-	for (u32 p = 4; p < c;){
+	vm->pc = 0;
+
+	for (int i = 0; i < 4; i++)
+		vm->pc = (vm->pc << 8) | buffer[4+i];
+	
+	for (u32 p = 8; p < c;){
 		// Get the location to store the new operation and increment program count immediately
 		Operation *OP = &(vm->program[(vm->prog_length)++]);
 		OP->code = buffer[p++];
@@ -63,6 +68,7 @@ void load(Vm vm, FILE *file){
 			// REVEIVES ()
 			case OP_DUMP:
 			case OP_RET:
+			case OP_END:
 			break;
 
 			// OTHERS

@@ -112,6 +112,8 @@ void run(Vm vm){
 			case OP_RET:
 				vm->pc = vm->regs[RE];
 				break;
+			case OP_END:
+				return;
 			default:
 				THROW_ERROR("Unkown Operation \'%d\'", op.code);
 

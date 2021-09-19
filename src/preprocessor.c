@@ -14,6 +14,9 @@ static u32 reading_producer_index, reading_consumer_index;
 static char reading_buffer[BUFFER_SIZE];
 static bool reading_buffer_free;
 
+static u32 start = 0;
+static bool start_is_defined = FALSE;
+
 static void *mallocWithError(size_t size){
   void *p = malloc(size);
   ASSERT(p != NULL, "Unable to allocate memory");
@@ -183,6 +186,10 @@ static void parse_word(char word[], u32 *pc){
 	}
 	else if (strcmp(word, "NOT") == 0){
 		(*pc)++;
+	}else if (strcmp(word, "_start:")  == 0){
+		ASSERT(start_is_defined == FALSE, "_start can only be defined once");
+		start = *pc;
+		start_is_defined = TRUE;
 	}else{
 		// CHECK IF IS LABEL
 		u32 last_char_index = strlen(word) - 1;
@@ -200,6 +207,7 @@ static void *convertFile(void *arg){
 	while(get_word(word))
 		 parse_word(word, &pc);
 
+	ht_add(&symb_table, "_start", start);
 	pthread_exit(NULL);
 	return NULL;
 }
