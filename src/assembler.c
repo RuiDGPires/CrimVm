@@ -1,5 +1,6 @@
 #include "vm.h"
 #include "util.h"
+#include "preprocessor.h"
 #include <pthread.h>
 
 static void *mallocWithError(size_t size){
@@ -10,6 +11,8 @@ static void *mallocWithError(size_t size){
 
 #define BUFFER_SIZE 1024 
 #define DUMP_SIZE BUFFER_SIZE / 2 
+
+static Hashtable symb_table;
 
 static pthread_mutex_t reading_mutex, writing_mutex;
 static pthread_cond_t reading_can_produce, reading_can_consume, writing_can_produce, writing_can_consume;
@@ -223,8 +226,15 @@ static int parse_op(char word[], int *op){
 	else if (strcmp(word, "NOT") == 0){
 		*op = OP_NOT;
 		return MAKE_ARG(ARG_REG);	
+	} else{
+		// SKIP LABELS
+		u32 last_char_index = strlen(word) - 1;
+		if (word[last_char_index] == ':'){
+			*op = LABEL;
+			return MAKE_ARG(ARG_NONE);	
+		}
+		else THROW_ERROR("Unkown operation: %s", word);
 	}
-	THROW_ERROR("Unkown operation: %s", word);
 }
 
 static void write_to_buffer(u8 val){
@@ -289,7 +299,15 @@ static void expect_type(u8 type){
 			if (is_number(word[0])) goto arg_val;
 			
 			for (aux = 0; word[aux] != '\0' && word[aux] != ':'; aux++) ;
-			// DO STUFF
+			
+			// IF LABEL SYMB
+			
+			val = ht_get(symb_table, word);
+
+			ASSERT(val != INVALID_ITEM, "Label not defined: %s", word);
+
+			for (int i = 3; i >= 0; i--)
+				write_to_buffer((val >> (8 * i)) & 0xFF);
 			break;
 
 		case ARG_FLAG:
@@ -333,7 +351,7 @@ static void *convertFile(void *arg){
 	while(get_word(word)){
 		int op_code;
 		int args = parse_op(word, &op_code);
-		
+		if (op_code == LABEL) continue;		
 		write_to_buffer(op_code);
 
 		ASSERT(args >= 0, "Unkown error");
@@ -440,6 +458,7 @@ static pthread_t *createWritingThread(char file[]){
 
 
 void assemble(char *file_in, char *file_out){
+	symb_table = preprocess(file_in);
 	pthread_mutex_init(&reading_mutex, NULL);	
 	pthread_mutex_init(&writing_mutex, NULL);	
 
