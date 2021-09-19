@@ -2,7 +2,7 @@
 #include "util.h"
 #include <pthread.h>
 
-void *mallocWithError(size_t size){
+static void *mallocWithError(size_t size){
   void *p = malloc(size);
   ASSERT(p != NULL, "Unable to allocate memory");
   return p;
@@ -11,40 +11,40 @@ void *mallocWithError(size_t size){
 #define BUFFER_SIZE 1024 
 #define DUMP_SIZE BUFFER_SIZE / 2 
 
-pthread_mutex_t reading_mutex, writing_mutex;
-pthread_cond_t reading_can_produce, reading_can_consume, writing_can_produce, writing_can_consume;
-u32 reading_producer_index, reading_consumer_index, writing_producer_index, writing_consumer_index;
+static pthread_mutex_t reading_mutex, writing_mutex;
+static pthread_cond_t reading_can_produce, reading_can_consume, writing_can_produce, writing_can_consume;
+static u32 reading_producer_index, reading_consumer_index, writing_producer_index, writing_consumer_index;
 
-char reading_buffer[BUFFER_SIZE];
-bool reading_buffer_free;
+static char reading_buffer[BUFFER_SIZE];
+static bool reading_buffer_free;
 
-u8 writing_buffer[BUFFER_SIZE];
-bool writing_buffer_free;
+static u8 writing_buffer[BUFFER_SIZE];
+static bool writing_buffer_free;
 
 // THREAD CONTROL //////////
-void mutexLock(pthread_mutex_t *mutex) {
+static void mutexLock(pthread_mutex_t *mutex) {
 	ASSERT(pthread_mutex_lock(mutex) == 0, "Error locking mutex");
 }
 
-void mutexUnlock(pthread_mutex_t *mutex) {
+static void mutexUnlock(pthread_mutex_t *mutex) {
 	ASSERT(pthread_mutex_unlock(mutex) == 0, "Error unlocking mutex");
 }
 
-void waitCondition(pthread_cond_t *cond, pthread_mutex_t *mutex){
+static void waitCondition(pthread_cond_t *cond, pthread_mutex_t *mutex){
 	ASSERT(pthread_cond_wait(cond, mutex) == 0, "Unable to wait for condition");
 }
 
-void signalCondition(pthread_cond_t *cond){
+static void signalCondition(pthread_cond_t *cond){
 	ASSERT(pthread_cond_signal(cond) == 0, "Unable to signal condition");
 }
 ///////////////////////////
 
 
-u32 get_distance_in_buffer(u32 a, u32 b){
+static u32 get_distance_in_buffer(u32 a, u32 b){
 	return a <= b? b - a: BUFFER_SIZE - a + b;  
 }
 
-void *readFile(void *arg){
+static void *readFile(void *arg){
 	char *filename = (char *) arg;
 	FILE *file = fopen(filename, "r");
 	ASSERT(file != NULL, "Unable to open file: %s", filename);
@@ -84,14 +84,14 @@ void *readFile(void *arg){
 	return NULL;
 }
 
-bool is_whitespace(char c){
+static bool is_whitespace(char c){
 	return c == ' ' || c == '\n' || c == '\t';
 }
 
 #define MAX_WORD_SIZE 32 
 
-bool ends_in_dot = FALSE;
-int get_word(char *word_buffer){
+static bool ends_in_dot = FALSE;
+static int get_word(char *word_buffer){
 	u32 p = 0;
 	bool is_comment = FALSE;
 
@@ -155,7 +155,7 @@ enum arg_type{ARG_NONE = 0,
 // SWAP ARGUMENTS TO MAKE IT EASIER TO PARSE
 #define MAKE_ARG2(t1, t2) t2*10 + t1
 
-int parse_op(char word[], int *op){
+static int parse_op(char word[], int *op){
 	if (strcmp(word, "MVI") == 0){
 		*op = OP_MVI;
 		return MAKE_ARG2(ARG_REG, ARG_VAL);
@@ -227,7 +227,7 @@ int parse_op(char word[], int *op){
 	THROW_ERROR("Unkown operation: %s", word);
 }
 
-void write_to_buffer(u8 val){
+static void write_to_buffer(u8 val){
 	mutexLock(&writing_mutex);
 
 
@@ -241,11 +241,11 @@ void write_to_buffer(u8 val){
 	mutexUnlock(&writing_mutex);
 }
 
-bool is_number(char c){
+static bool is_number(char c){
 	return c >= '0' && c <= '9';
 }
 
-u32 hex_to_u32(char hex[]) {
+static u32 hex_to_u32(char hex[]) {
     u32 val = 0;
     while (*hex) {
         // get current character then increment
@@ -261,8 +261,8 @@ u32 hex_to_u32(char hex[]) {
 }
 
 
-u32 flags = 0;
-void expect_type(u8 type){
+static u32 flags = 0;
+static void expect_type(u8 type){
 	char word[MAX_WORD_SIZE];
 	get_word(word);
 	u32 val;
@@ -327,7 +327,7 @@ void expect_type(u8 type){
 	}
 }
 
-void *convertFile(void *arg){
+static void *convertFile(void *arg){
 	char word[MAX_WORD_SIZE];
 
 	while(get_word(word)){
@@ -371,7 +371,7 @@ void *convertFile(void *arg){
 	return NULL;
 }
 
-void *writeFile(void *arg){
+static void *writeFile(void *arg){
 	char *filename = (char *) arg;
 	FILE *file = fopen(filename, "wb");
 	if (file == NULL) THROW_ERROR("Unable to open file: %s", filename);
@@ -414,7 +414,7 @@ void *writeFile(void *arg){
 	return NULL;
 }
 
-pthread_t *createReadingThread(char file[]){
+static pthread_t *createReadingThread(char file[]){
 	pthread_t *thread = (pthread_t *) mallocWithError(sizeof(pthread_t));
 	
 	if (pthread_create(thread, NULL, readFile, (void *) file))
@@ -422,7 +422,7 @@ pthread_t *createReadingThread(char file[]){
 	return thread;
 }
 
-pthread_t *createConvertingThread(){
+static pthread_t *createConvertingThread(){
 	pthread_t *thread = (pthread_t *) mallocWithError(sizeof(pthread_t));
 	
 	if (pthread_create(thread, NULL, convertFile, NULL))
@@ -430,7 +430,7 @@ pthread_t *createConvertingThread(){
 	return thread;
 }
 
-pthread_t *createWritingThread(char file[]){
+static pthread_t *createWritingThread(char file[]){
 	pthread_t *thread = (pthread_t *) mallocWithError(sizeof(pthread_t));
 	
 	if (pthread_create(thread, NULL, writeFile, (void *) file))
