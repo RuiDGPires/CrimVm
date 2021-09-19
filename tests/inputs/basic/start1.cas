@@ -1,0 +1,10 @@
+MVI R1 90
+PSH R1
+DMP
+
+_start:
+MVI R1 10
+
+PSH R1
+DMP
+END

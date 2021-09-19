@@ -1,0 +1,10 @@
+foo:
+DMP
+RET
+
+
+_start:
+MVI R1 10
+PSH R1
+JMP foo
+END
