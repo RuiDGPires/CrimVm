@@ -152,7 +152,9 @@ enum arg_type{ARG_NONE = 0,
 							ARG_VAL, 
 							ARG_MEM,
 							ARG_FLAG,
-							ARG_LABEL_OR_VAL};
+							ARG_LABEL_OR_VAL,
+							ARG_LABEL_OR_OFFSET,
+							};
 
 #define MAKE_ARG(type) type
 // SWAP ARGUMENTS TO MAKE IT EASIER TO PARSE
@@ -201,7 +203,7 @@ static int parse_op(char word[], int *op){
 	}
 	else if (strcmp(word, "BR") == 0){
 		*op = OP_BR;
-		return MAKE_ARG2(ARG_FLAG, ARG_LABEL_OR_VAL);	
+		return MAKE_ARG2(ARG_FLAG, ARG_LABEL_OR_OFFSET);	
 	}
 	else if (strcmp(word, "JMP") == 0){
 		*op = OP_JMP;
@@ -272,6 +274,7 @@ static u32 hex_to_u32(char hex[]) {
 
 
 static u32 flags = 0;
+static u32 pc = 0;
 static void expect_type(u8 type){
 	char word[MAX_WORD_SIZE];
 	get_word(word);
@@ -295,6 +298,7 @@ static void expect_type(u8 type){
 			write_to_buffer((u8) (word[3] - '0'));
 			break;
 
+		case ARG_LABEL_OR_OFFSET:
 		case ARG_LABEL_OR_VAL:
 			if (is_number(word[0])) goto arg_val;
 			
@@ -303,8 +307,12 @@ static void expect_type(u8 type){
 			// IF LABEL SYMB
 			
 			val = ht_get(symb_table, word);
-
 			ASSERT(val != INVALID_ITEM, "Label not defined: %s", word);
+
+			// IF OFFSET
+			if (type == ARG_LABEL_OR_OFFSET)
+				val -= pc -1;
+
 
 			for (int i = 3; i >= 0; i--)
 				write_to_buffer((val >> (8 * i)) & 0xFF);
@@ -352,6 +360,8 @@ static void *convertFile(void *arg){
 		int op_code;
 		int args = parse_op(word, &op_code);
 		if (op_code == LABEL) continue;		
+
+		pc++;
 		write_to_buffer(op_code);
 
 		ASSERT(args >= 0, "Unkown error");
