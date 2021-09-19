@@ -1,0 +1,14 @@
+MVI R1 2
+MVI R2 1
+
+CMP R1 R2
+JMP.N 6
+
+MVI R1 0
+
+JMP 7 
+
+MVI R1 1
+
+PSH R1
+DMP
