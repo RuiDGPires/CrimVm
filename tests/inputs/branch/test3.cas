@@ -1,0 +1,14 @@
+MVI R1 3
+
+CMP R1 R1
+JMP.NN.NZ 5
+
+MVI R2 10
+JMP 6
+
+MVI R2 200
+
+; End
+PSH R2
+DMP
+
