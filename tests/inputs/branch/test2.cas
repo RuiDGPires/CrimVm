@@ -2,15 +2,12 @@ MVI R1 3
 MVI R2 2
 
 CMP R1 R2
-BR.NN greater
+JMP.NN 7 
 
 MVI R1 20
 BR end
 
-greater:
 MVI R1 10
-BR end
 
-end:
 PSH R1
 DMP
