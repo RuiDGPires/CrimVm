@@ -11,15 +11,13 @@ void run(Vm vm){
 		u32 res;
 		switch(op.code){
 			case OP_MVI:
-				if (op.args[0] != R0)
-					vm->regs[op.args[0]] = op.args[1];
+				res = op.args[1];
 				vm->pc++;
-				break;
+				goto store_res;
 			case OP_MOV:
-				if (op.args[0] != R0)
-					vm->regs[op.args[0]] = vm->regs[op.args[1]];
+				res =  vm->regs[op.args[1]];
 				vm->pc++;
-				break;
+				goto store_res;
 			case OP_ADD:
 				res = vm->regs[op.args[0]] + vm->regs[op.args[1]];
 				vm->flags = 0;
@@ -28,10 +26,8 @@ void run(Vm vm){
 				if ((check_msbit(vm->regs[op.args[0]]) || check_msbit(vm->regs[op.args[1]])) && !check_msbit(res))
 					vm->flags |= FLG_OV;
 
-				if (op.args[0] != R0)
-					vm->regs[op.args[0]] = res;
 				vm->pc++;
-				break;
+				goto store_res;
 			case OP_DUMP:
 				printf("%d\n", vm_pop(vm));
 				vm->pc++;
@@ -41,19 +37,17 @@ void run(Vm vm){
 				vm->pc++;
 				break;
 			case OP_LOAD:
-				if (op.args[0] != R0)
-					vm->regs[op.args[0]] = vm->mem[vm->regs[op.args[1]]];
+				res = vm->mem[vm->regs[op.args[1]]];
 				vm->pc++;
-				break;
+				goto store_res;
 			case OP_PUSH:
 				vm_push(vm->regs[op.args[0]], vm);
 				vm->pc++;
 				break;
 			case OP_POP:
-				if (op.args[0] != R0)
-					vm->regs[op.args[0]] = vm_pop(vm);
+				res = vm_pop(vm);
 				vm->pc++;
-				break;
+				goto store_res;
 			case OP_SUB:
 				res = vm->regs[op.args[0]] - vm->regs[op.args[1]];
 				vm->flags = 0;
@@ -63,10 +57,8 @@ void run(Vm vm){
 				if (res == 0)
 					vm->flags |= FLG_ZERO;
 				
-				if (op.args[0] != R0)
-					vm->regs[op.args[0]] = res;
 				vm->pc++;
-				break;
+				goto store_res;
 			case OP_CMP:
 				res = vm->regs[op.args[0]] - vm->regs[op.args[1]];
 				vm->flags = 0;
@@ -78,9 +70,63 @@ void run(Vm vm){
 
 				vm->pc++;
 				break;
+			case OP_AND:
+				res = vm->regs[op.args[0]] & vm->regs[op.args[1]];
+				vm->pc++;
+				goto store_res;
+			case OP_OR:
+				res = vm->regs[op.args[0]] | vm->regs[op.args[1]];
+				vm->pc++;
+				goto store_res;
+			case OP_XOR:
+				res = vm->regs[op.args[0]] ^ vm->regs[op.args[1]];
+				vm->pc++;
+				goto store_res;
+			case OP_NOT:
+				res = ~(vm->regs[op.args[0]]);
+				vm->pc++;
+				goto store_res;
+			case OP_BR:
+				if (op.args[0] == 0)
+					res = 1;
+				else if (op.args[0] & 0x80){ // IF NEGATION
+					op.args[0] = op.args[0] & 0x7F; // CLEAR MOST SIGNIFICANT BIT
+					res = !(vm->flags & op.args[0]);
+				}else
+					res = vm->flags & op.args[0];
+			
+				if (res)	
+					vm->pc += op.args[1];
+				else
+					vm->pc++;
+				break;
+			case OP_JMP:
+				if (op.args[0] == 0)
+					res = 1;
+				else if (op.args[0] & 0x80){ // IF NEGATION
+					op.args[0] = op.args[0] & 0x7F; // CLEAR MOST SIGNIFICANT BIT
+					res = !(vm->flags & op.args[0]);
+				}else
+					res = vm->flags & op.args[0];
+			
+				if (res){
+					vm->regs[RE] = vm->pc + 1;
+					vm->pc = op.args[1];
+				}
+				else
+					vm->pc++;
+
+				break;
+			case OP_RET:
+				vm->pc = vm->regs[RE];
+				break;
 			default:
 				THROW_ERROR("Unkown Operation \'%d\'", op.code);
-				return;
+
+			store_res:
+				if (op.args[0] != R0)
+					vm->regs[op.args[0]] = res;	
+				break;
 		}	
 	} 
 }

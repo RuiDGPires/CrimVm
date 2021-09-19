@@ -89,9 +89,14 @@ bool is_whitespace(char c){
 }
 
 #define MAX_WORD_SIZE 32 
+
+bool ends_in_dot = FALSE;
 int get_word(char *word_buffer){
 	u32 p = 0;
 	bool is_comment = FALSE;
+
+	if (ends_in_dot)
+		ends_in_dot = FALSE;
 
 	while(1){
 		mutexLock(&reading_mutex);
@@ -126,8 +131,14 @@ int get_word(char *word_buffer){
 				word_buffer[p] = '\0';
 				break;
 			}else continue;	
-		else{
-			word_buffer[p++] = c;
+		else{ 
+			// Special case for dot
+			if (c == '.'){
+				ends_in_dot = TRUE;
+				word_buffer[p] = '\0';
+				break;
+			}else
+				word_buffer[p++] = c;
 		}	
 	}
 	return p;
@@ -136,7 +147,9 @@ int get_word(char *word_buffer){
 enum arg_type{ARG_NONE = 0,
 							ARG_REG,
 							ARG_VAL, 
-							ARG_MEM};
+							ARG_MEM,
+							ARG_FLAG,
+							ARG_LABEL_OR_VAL};
 
 #define MAKE_ARG(type) type
 // SWAP ARGUMENTS TO MAKE IT EASIER TO PARSE
@@ -183,6 +196,34 @@ int parse_op(char word[], int *op){
 		*op = OP_CMP;
 		return MAKE_ARG2(ARG_REG, ARG_REG);	
 	}
+	if (strcmp(word, "BR") == 0){
+		*op = OP_BR;
+		return MAKE_ARG2(ARG_FLAG, ARG_LABEL_OR_VAL);	
+	}
+	if (strcmp(word, "JMP") == 0){
+		*op = OP_JMP;
+		return MAKE_ARG2(ARG_FLAG, ARG_LABEL_OR_VAL);	
+	}
+	if (strcmp(word, "RET") == 0){
+		*op = OP_RET;
+		return MAKE_ARG(ARG_NONE);	
+	}
+	if (strcmp(word, "AND") == 0){
+		*op = OP_AND;
+		return MAKE_ARG2(ARG_REG, ARG_REG);	
+	}
+	if (strcmp(word, "OR") == 0){
+		*op = OP_OR;
+		return MAKE_ARG2(ARG_REG, ARG_REG);	
+	}
+	if (strcmp(word, "XOR") == 0){
+		*op = OP_XOR;
+		return MAKE_ARG2(ARG_REG, ARG_REG);	
+	}
+	if (strcmp(word, "NOT") == 0){
+		*op = OP_NOT;
+		return MAKE_ARG(ARG_REG);	
+	}
 	THROW_ERROR("Unkown operation: %s", word);
 }
 
@@ -200,10 +241,32 @@ void write_to_buffer(u8 val){
 	mutexUnlock(&writing_mutex);
 }
 
-void expect_type(int type){
+bool is_number(char c){
+	return c >= '0' && c <= '9';
+}
+
+u32 hex_to_u32(char hex[]) {
+    u32 val = 0;
+    while (*hex) {
+        // get current character then increment
+        u8 byte = *hex++; 
+        // transform hex character to the 4bit equivalent number, using the ascii table indexes
+        if (byte >= '0' && byte <= '9') byte = byte - '0';
+					else if (byte >= 'a' && byte <='f') byte = byte - 'a' + 10;
+        else if (byte >= 'A' && byte <='F') byte = byte - 'A' + 10;    
+        // shift 4 to make space for new digit, and add the 4 bits of the new digit 
+        val = (val << 4) | (byte & 0xF);
+    }
+    return val;
+}
+
+
+void expect_type(u8 type){
 	char word[MAX_WORD_SIZE];
 	get_word(word);
 	u32 val;
+	u32 aux;
+
 	switch (type){
 		case ARG_REG:
 			ASSERT(word[0] == 'R', "Unexpected Token: %c", word[0]);
@@ -220,8 +283,41 @@ void expect_type(int type){
 			ASSERT(word[4] == ']', "Unexpected Token: %c", word[4]);
 			write_to_buffer((u8) (word[3] - '0'));
 			break;
+
+		case ARG_LABEL_OR_VAL:
+			if (is_number(word[0])) goto arg_val;
+			
+			for (aux = 0; word[aux] != '\0' && word[aux] != ':'; aux++) ;
+			// DO STUFF
+			break;
+
+		case ARG_FLAG:
+			val = 0;
+			aux = 0;
+			if (word[0] == 'N'){
+				if (word[1] == '\0')
+					val |= FLG_NEG;
+				else{
+					val |= 0x80;
+					aux = 1;	
+				}
+			}
+			if (word[aux] == 'Z')
+				val |= FLG_ZERO;
+			if (word[aux] == 'N')
+				val |= FLG_NEG;
+			if (word[aux] == 'O')
+				val |= FLG_OV;
+	
+			write_to_buffer((u8) val);
+			break;
 		case ARG_VAL:
-			val = (u32) atoi(word); 
+		arg_val:
+			if (word[0] == '0' && word[1] == 'x')
+				val = hex_to_u32(&word[2]);
+			else
+				val = (u32) atoi(word); 
+			
 			for (int i = 3; i >= 0; i--)
 				write_to_buffer((val >> (8 * i)) & 0xFF);
 			break;
@@ -239,9 +335,21 @@ void *convertFile(void *arg){
 
 		ASSERT(args >= 0, "Unkown error");
 
-		while(args != 0){
-			expect_type(args % 10);
-			args /= 10;
+		for(; args != 0; args /= 10){
+			u8 type = args % 10;
+	
+			if (type == ARG_FLAG){
+				if (ends_in_dot)
+					expect_type(type);
+				else{
+					write_to_buffer(0);
+					continue;
+				}
+			}
+			expect_type(type);
+
+			if (ends_in_dot)
+				THROW_ERROR("Unexpected symbol '.'");
 		}
 	}
 	mutexLock(&writing_mutex);

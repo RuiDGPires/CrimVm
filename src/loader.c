@@ -5,7 +5,13 @@
 
 #define LOAD_BUFFER_SIZE VM_PROG_MEM_SIZE
 
-// NEEDS TO BE CHANGED!!!!!!!!!!11
+u32 u32_from_buffer(u32 *p, u8 buffer[]){
+	u32 val = 0;
+	for (int i = 0; i < 4; i++)
+		val = (val << 8) | (buffer[(*p)++] & 0xFF); 	
+	return val;
+}
+
 void load(Vm vm, FILE *file){
 	u8 buffer[LOAD_BUFFER_SIZE];
 	
@@ -25,44 +31,45 @@ void load(Vm vm, FILE *file){
 		Operation *OP = &(vm->program[(vm->prog_length)++]);
 		OP->code = buffer[p++];
 		switch (OP->code){
-			case OP_MVI:
-				OP->args[0] = buffer[p++];	
-				OP->args[1] = 0; 
-				for (int i = 0; i < 4; i++)
-					OP->args[1] = (OP->args[1] << 8) | (buffer[p++] & 0xFF); 	
-				break;
+			// RECEIVES (u8, u8)
 			case OP_MOV:
-				OP->args[0] = buffer[p++];
-				OP->args[1] = buffer[p++];
-				break;
 			case OP_ADD:
-				OP->args[0] = buffer[p++];
-				OP->args[1] = buffer[p++];
-				break;
-			case OP_DUMP:
-			break;
 			case OP_STORE:
-				OP->args[0] = buffer[p++];
-				OP->args[1] = buffer[p++];
-				break;
 			case OP_LOAD:
-				OP->args[0] = buffer[p++];
-				OP->args[1] = buffer[p++];
-				break;
-			case OP_PUSH:
-				OP->args[0] = buffer[p++];
-			break;
-			case OP_POP:
-				OP->args[0] = buffer[p++];
-				break;
 			case OP_SUB:
-				OP->args[0] = buffer[p++];
-				OP->args[1] = buffer[p++];
-				break;
 			case OP_CMP:
+			case OP_AND:
+			case OP_OR:
+			case OP_XOR:
 				OP->args[0] = buffer[p++];
 				OP->args[1] = buffer[p++];
 				break;
+
+			// RECEIVES (u8, u32)
+			case OP_MVI:
+			case OP_BR:
+			case OP_JMP:
+				OP->args[0] = buffer[p++];	
+				OP->args[1] = u32_from_buffer(&p, buffer); 
+				break;
+
+			// RECEIVES (u8)
+			case OP_PUSH:
+			case OP_POP:
+			case OP_NOT:
+				OP->args[0] = buffer[p++];
+				break;
+
+			// REVEIVES ()
+			case OP_DUMP:
+			case OP_RET:
+			break;
+
+			// OTHERS
+			case LABEL:
+				break;
+			default:
+				THROW_ERROR("Unkown OPCode");
 		}
 	}	
 }
