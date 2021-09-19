@@ -10,15 +10,6 @@ BR end
 
 
 
-
-
-
-
-
-
-
-
-
 ; Takes x and y and returns x * y
 ; Arguments and return value are handed through the stack
 mul:
@@ -36,10 +27,12 @@ SUB R1 R3
 
 BR loop
 
-
 ret:
 PSH R4
 RET
+
+
+
 
 end:
 DMP
