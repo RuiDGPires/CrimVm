@@ -1,0 +1,52 @@
+MVI R1 6
+MVI R2 4
+
+SUB R1 R2 
+
+PSH R1
+JMP foo
+POP R1
+
+PSH R2
+PSH R1
+
+JMP end
+
+
+foo:
+POP R1
+PSH R2
+PSH RE
+
+MVI R2 1
+ADD R1 R2
+
+PSH R1
+JMP add_self_three_times
+POP R1 ; 
+
+MVI R2 20
+
+SUB R1 R2
+
+
+POP RE
+POP R2
+PSH R1
+RET
+
+
+
+add_self_three_times:
+POP R1
+
+ADD R1 R1
+ADD R1 R1
+ADD R1 R1
+
+PSH R1
+RET
+
+end:
+DMP ; 4
+DMP 
