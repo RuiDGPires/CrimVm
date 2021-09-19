@@ -338,14 +338,11 @@ void *convertFile(void *arg){
 		for(; args != 0; args /= 10){
 			u8 type = args % 10;
 	
-			if (type == ARG_FLAG){
-				if (ends_in_dot)
-					expect_type(type);
-				else{
+			if (type == ARG_FLAG && !ends_in_dot){
 					write_to_buffer(0);
 					continue;
-				}
 			}
+
 			expect_type(type);
 
 			if (ends_in_dot)
