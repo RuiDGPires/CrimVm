@@ -275,6 +275,16 @@ static u32 hex_to_u32(char hex[]) {
 
 static u32 flags = 0;
 static u32 pc = 0;
+
+static u8 parse_register(char c){
+	ASSERT(c >= '0' && c <= '9', "Unexpected Token: %c", c);
+	ASSERT(c - '0' < R_COUNT, "Invalid register: R%d", c - '0');
+
+	if (c == 'E')
+		return RE;
+	return c - '0';
+}
+
 static void expect_type(u8 type){
 	char word[MAX_WORD_SIZE];
 	get_word(word);
@@ -284,18 +294,14 @@ static void expect_type(u8 type){
 	switch (type){
 		case ARG_REG:
 			ASSERT(word[0] == 'R', "Unexpected Token: %c", word[0]);
-			ASSERT(word[1] >= '0' && word[1] <= '9', "Unexpected Token: %c", word[1]);
-			ASSERT(word[1] - '0' < R_COUNT, "Invalid register: R%d", word[1]- '0');
-			write_to_buffer((u8) (word[1] - '0'));	
+			write_to_buffer(parse_register(word[1]));	
 			break;
 		case ARG_MEM:
 			ASSERT(word[0] == 'm', "Unexpected Token: %c", word[0]);
 			ASSERT(word[1] == '[', "Unexpected Token: %c", word[1]);
 			ASSERT(word[2] == 'R', "Unexpected Token: %c", word[2]);
-			ASSERT(word[3] >= '0' && word[3] <= '9', "Unexpected Token: %c", word[3]);
-			ASSERT(word[3] - '0' < R_COUNT, "Invalid register: R%d", word[3]-'0');
 			ASSERT(word[4] == ']', "Unexpected Token: %c", word[4]);
-			write_to_buffer((u8) (word[3] - '0'));
+			write_to_buffer(parse_register(word[3]));
 			break;
 
 		case ARG_LABEL_OR_OFFSET:
