@@ -13,8 +13,9 @@
 enum op_code {OP_MVI = 0, OP_MOV, OP_ADD, OP_DUMP, OP_STORE, OP_LOAD, OP_PUSH, OP_POP, OP_SUB, OP_CMP, OP_BR, OP_JMP, OP_RET, OP_AND, OP_OR, OP_XOR, OP_NOT, LABEL};
 
 enum flags {FLG_ZERO = 1	<< 0,
-						FLG_NEG = 1		<< 1,
-					 	FLG_OV = 1		<< 2,
+						FLG_POS = 1		<< 1,
+						FLG_NEG = 1		<< 2,
+					 	FLG_OV = 1		<< 3,
 						};
 
 typedef struct vm_s *Vm;

@@ -5,6 +5,10 @@ u8 check_msbit(u32 val){
 	return (val & 0x80000000) != 0;
 }
 
+bool check_flags(u8 vm_flags, u8 cond){
+	return (vm_flags & cond) || cond == 0;
+}
+
 void run(Vm vm){
 	while(vm->pc < vm->prog_length){
 		Operation op = vm->program[vm->pc];
@@ -51,22 +55,26 @@ void run(Vm vm){
 			case OP_SUB:
 				res = vm->regs[op.args[0]] - vm->regs[op.args[1]];
 				vm->flags = 0;
+
 				if (check_msbit(res))
 					vm->flags |= FLG_NEG;
-
-				if (res == 0)
+				else if (res == 0)
 					vm->flags |= FLG_ZERO;
+				else
+					vm->flags |= FLG_POS;
 				
 				vm->pc++;
 				goto store_res;
 			case OP_CMP:
 				res = vm->regs[op.args[0]] - vm->regs[op.args[1]];
 				vm->flags = 0;
+
 				if (check_msbit(res))
 					vm->flags |= FLG_NEG;
-
-				if (res == 0)
+				else if (res == 0)
 					vm->flags |= FLG_ZERO;
+				else
+					vm->flags |= FLG_POS;
 
 				vm->pc++;
 				break;
@@ -87,29 +95,13 @@ void run(Vm vm){
 				vm->pc++;
 				goto store_res;
 			case OP_BR:
-				if (op.args[0] == 0)
-					res = 1;
-				else if (op.args[0] & 0x80){ // IF NEGATION
-					op.args[0] = op.args[0] & 0x7F; // CLEAR MOST SIGNIFICANT BIT
-					res = !(vm->flags & op.args[0]);
-				}else
-					res = vm->flags & op.args[0];
-			
-				if (res)	
+				if (check_flags(vm->flags, op.args[0]))
 					vm->pc += op.args[1];
 				else
 					vm->pc++;
 				break;
 			case OP_JMP:
-				if (op.args[0] == 0)
-					res = 1;
-				else if (op.args[0] & 0x80){ // IF NEGATION
-					op.args[0] = op.args[0] & 0x7F; // CLEAR MOST SIGNIFICANT BIT
-					res = !(vm->flags & op.args[0]);
-				}else
-					res = vm->flags & op.args[0];
-			
-				if (res){
+				if (check_flags(vm->flags, op.args[0])){
 					vm->regs[RE] = vm->pc + 1;
 					vm->pc = op.args[1];
 				}

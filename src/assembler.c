@@ -261,6 +261,7 @@ u32 hex_to_u32(char hex[]) {
 }
 
 
+u32 flags = 0;
 void expect_type(u8 type){
 	char word[MAX_WORD_SIZE];
 	get_word(word);
@@ -292,24 +293,26 @@ void expect_type(u8 type){
 			break;
 
 		case ARG_FLAG:
-			val = 0;
 			aux = 0;
-			if (word[0] == 'N'){
-				if (word[1] == '\0')
-					val |= FLG_NEG;
-				else{
-					val |= 0x80;
-					aux = 1;	
-				}
-			}
-			if (word[aux] == 'Z')
-				val |= FLG_ZERO;
-			if (word[aux] == 'N')
-				val |= FLG_NEG;
-			if (word[aux] == 'O')
-				val |= FLG_OV;
-	
-			write_to_buffer((u8) val);
+			if (strcmp(word, "N") == 0)
+				flags |= FLG_NEG;
+			else if (strcmp(word, "NN") == 0){
+				flags |= FLG_POS;
+				flags |= FLG_ZERO;
+			} else if (strcmp(word, "P") == 0)
+				flags |= FLG_POS;
+			else if (strcmp(word, "NP") == 0){
+				flags |= FLG_NEG;
+				flags |= FLG_ZERO;
+			} else if (strcmp(word, "Z") == 0)
+				flags |= FLG_ZERO;
+			else if (strcmp(word, "NZ") == 0){
+				flags |= FLG_NEG;
+				flags |= FLG_POS;
+			} else if (strcmp(word, "O") == 0)
+				flags |= FLG_OV;
+
+			else THROW_ERROR("Unkown flag: %s", word);
 			break;
 		case ARG_VAL:
 		arg_val:
@@ -338,10 +341,21 @@ void *convertFile(void *arg){
 		for(; args != 0; args /= 10){
 			u8 type = args % 10;
 	
-			if (type == ARG_FLAG && !ends_in_dot){
+			// Flag system
+			if (type == ARG_FLAG){
+				flags = 0;
+				if (!ends_in_dot){
 					write_to_buffer(0);
+					continue;	
+				}else{
+					while(ends_in_dot){
+						expect_type(ARG_FLAG);
+					}
+					write_to_buffer((u8) flags);
 					continue;
+				}
 			}
+		
 
 			expect_type(type);
 
