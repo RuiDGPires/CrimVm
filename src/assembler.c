@@ -277,11 +277,11 @@ static u32 flags = 0;
 static u32 pc = 0;
 
 static u8 parse_register(char c){
+	if (c == 'E')
+		return RE;
 	ASSERT(c >= '0' && c <= '9', "Unexpected Token: %c", c);
 	ASSERT(c - '0' < R_COUNT, "Invalid register: R%d", c - '0');
 
-	if (c == 'E')
-		return RE;
 	return c - '0';
 }
 
