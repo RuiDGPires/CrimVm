@@ -160,67 +160,67 @@ int parse_op(char word[], int *op){
 		*op = OP_MVI;
 		return MAKE_ARG2(ARG_REG, ARG_VAL);
 	}
-	if (strcmp(word, "MOV") == 0){
+	else if (strcmp(word, "MOV") == 0){
 		*op = OP_MOV;
 		return MAKE_ARG2(ARG_REG, ARG_REG);	
 	}
-	if (strcmp(word, "ADD") == 0){
+	else if (strcmp(word, "ADD") == 0){
 		*op = OP_ADD;
 		return MAKE_ARG2(ARG_REG, ARG_REG);	
 	}
-	if (strcmp(word, "DMP") == 0){
+	else if (strcmp(word, "DMP") == 0){
 		*op = OP_DUMP;
 		return MAKE_ARG(ARG_NONE); 
 	}
-	if (strcmp(word, "STORE") == 0){
+	else if (strcmp(word, "STORE") == 0){
 		*op = OP_STORE;
 		return MAKE_ARG2(ARG_MEM, ARG_REG); 
 	}
-	if (strcmp(word, "LOAD") == 0){
+	else if (strcmp(word, "LOAD") == 0){
 		*op = OP_LOAD;
 		return MAKE_ARG2(ARG_REG, ARG_MEM); 
 	}
-	if (strcmp(word, "PSH") == 0){
+	else if (strcmp(word, "PSH") == 0){
 		*op = OP_PUSH;
 		return MAKE_ARG(ARG_REG); 
 	}
-	if (strcmp(word, "POP") == 0){
+	else if (strcmp(word, "POP") == 0){
 		*op = OP_POP;
 		return MAKE_ARG(ARG_REG); 
 	}
-	if (strcmp(word, "SUB") == 0){
+	else if (strcmp(word, "SUB") == 0){
 		*op = OP_SUB;
 		return MAKE_ARG2(ARG_REG, ARG_REG);	
 	}
-	if (strcmp(word, "CMP") == 0){
+	else if (strcmp(word, "CMP") == 0){
 		*op = OP_CMP;
 		return MAKE_ARG2(ARG_REG, ARG_REG);	
 	}
-	if (strcmp(word, "BR") == 0){
+	else if (strcmp(word, "BR") == 0){
 		*op = OP_BR;
 		return MAKE_ARG2(ARG_FLAG, ARG_LABEL_OR_VAL);	
 	}
-	if (strcmp(word, "JMP") == 0){
+	else if (strcmp(word, "JMP") == 0){
 		*op = OP_JMP;
 		return MAKE_ARG2(ARG_FLAG, ARG_LABEL_OR_VAL);	
 	}
-	if (strcmp(word, "RET") == 0){
+	else if (strcmp(word, "RET") == 0){
 		*op = OP_RET;
 		return MAKE_ARG(ARG_NONE);	
 	}
-	if (strcmp(word, "AND") == 0){
+	else if (strcmp(word, "AND") == 0){
 		*op = OP_AND;
 		return MAKE_ARG2(ARG_REG, ARG_REG);	
 	}
-	if (strcmp(word, "OR") == 0){
+	else if (strcmp(word, "OR") == 0){
 		*op = OP_OR;
 		return MAKE_ARG2(ARG_REG, ARG_REG);	
 	}
-	if (strcmp(word, "XOR") == 0){
+	else if (strcmp(word, "XOR") == 0){
 		*op = OP_XOR;
 		return MAKE_ARG2(ARG_REG, ARG_REG);	
 	}
-	if (strcmp(word, "NOT") == 0){
+	else if (strcmp(word, "NOT") == 0){
 		*op = OP_NOT;
 		return MAKE_ARG(ARG_REG);	
 	}
