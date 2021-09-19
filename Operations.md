@@ -16,3 +16,4 @@
 | CMP | u8 REG1, u8 REG2 | Updates the flags according to the subtraction of REG1 by REG2|
 | BR | [FLAGS, ] Label or u32 val | Branches to the label or offset val|
 | JMP | [FLAGS, ] Label or u32 val | Branches to the label or to absolute val storing the previous PC in the RE register|
+| END | | Terminates the program |
