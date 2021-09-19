@@ -2,10 +2,9 @@ MVI R1 3
 MVI R2 2
 
 CMP R1 R2
-JMP.NN 7 
+JMP.NN 5 
 
 MVI R1 20
-BR end
 
 MVI R1 10
 
