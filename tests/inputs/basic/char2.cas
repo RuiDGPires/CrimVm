@@ -1,0 +1,7 @@
+MVI R1 '\n'
+PSH R1
+DMP
+
+MVI R1 '\t'
+PSH R1
+DMP
