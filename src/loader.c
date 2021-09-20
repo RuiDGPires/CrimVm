@@ -71,6 +71,9 @@ void load(Vm vm, FILE *file){
 			case OP_DUMP:
 			case OP_RET:
 			case OP_END:
+			case TRP_GETC:
+			case TRP_OUT:
+			case TRP_PRNT:
 			break;
 
 			// OTHERS

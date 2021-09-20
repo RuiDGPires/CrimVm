@@ -123,6 +123,27 @@ void run(Vm vm){
 			case OP_END:
 				return;
 
+
+			// Trap routines
+			case TRP_GETC:
+				vm_push((u32) getchar(), vm);	
+				break;	
+			// Pops a pointer from the stack and prints until it reaches a \0
+			case TRP_PRNT:
+				for(u32 p = vm_pop(vm); vm->mem[p]; p++) {
+					res = vm->mem[p]; 
+					fputc((char) res, stdout);
+				}
+				fflush(stdout);	
+				vm->pc++;
+				break;
+			case TRP_OUT:
+				res = vm_pop(vm);
+				fputc((char) res, stdout);
+				fflush(stdout);
+				vm->pc++;
+				break;
+
 			default:
 				THROW_ERROR("Unkown Operation \'%d\'", op.code);
 
