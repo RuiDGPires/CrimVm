@@ -64,6 +64,8 @@ void load(Vm vm, FILE *file){
 			case OP_NOT:
 			case OP_SHR:
 			case OP_SHL:
+			case OP_INC:
+			case OP_DEC:
 				OP->args[0] = buffer[p++];
 				break;
 

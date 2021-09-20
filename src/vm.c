@@ -120,6 +120,14 @@ void run(Vm vm){
 				res = vm->regs[op.args[0]] >> 1;
 				vm->pc++;
 				goto store_res;
+			case OP_INC:
+				res = vm->regs[op.args[0]] + 1;
+				vm->pc++;
+				goto store_res;
+			case OP_DEC:
+				res = vm->regs[op.args[0]] - 1;
+				vm->pc++;
+				goto store_res;
 			case OP_END:
 				return;
 
