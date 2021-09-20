@@ -73,7 +73,7 @@ The result of the operation (except CMP) is always stored in the first register.
 ### Registers
 
 | Register | Decription | Preserved after a function call |
-| :---: | :--- |
+| :---: | :--- | :---: |
 | R0 | A register that always equals to 0 | Yes |
 | R1 | General purpose register | No |
 | R2 | General purpose register | No |
