@@ -1,0 +1,19 @@
+;@[in]
+MVI R3 0
+
+loop:
+GET
+POP R1
+MVI R2 '\n'
+STORE m[R3] R1
+INC R3
+CMP R1 R2
+BR.Z end
+
+BR loop
+
+end:
+MVI R1 '\0'
+STORE m[R3] R1 
+PSH R0
+PRNT 
