@@ -1,0 +1,17 @@
+MOV R1 R0
+
+MVI R2 'C'
+STORE m[R1][0] R2
+MVI R2 'R'
+STORE m[R1][1] R2
+MVI R2 'I'
+STORE m[R1][2] R2
+MVI R2 'M'
+STORE m[R1][3] R2
+MVI R2 '\n'
+STORE m[R1][4] R2
+MVI R2 '\0'
+STORE m[R1][5] R2
+
+PSH R1
+PRNT
