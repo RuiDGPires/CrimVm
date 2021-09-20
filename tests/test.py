@@ -78,16 +78,30 @@ for directory in DIRS:
     section_text = ""
 
     for file in INPUT_FILES:
+        if os.path.splitext(file)[-1] != ".cas": continue
+        # Check if test file needs input file
+        needs_input = False
+        first_line = ""
+        with open(file, 'r') as f:
+            first_line = f.readline()
+        if first_line.replace(" ", "").replace("\n", "") == ";@[in]":
+            needs_input = True
+
         # GET FILE NAME
         filename = os.path.basename(file)
-        if (filename == "section.txt"): continue
 
         n_files += 1
         filename_no_ext = os.path.splitext(filename)[0] 
         out_file = f"{dir_path}/outputs/{directory}/{filename_no_ext}.out"
 
         # EXECUTE PROGRAM
-        result = subprocess.run([EXE, "-ar", file], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        result = 0
+        if not needs_input:
+            result = subprocess.run([EXE, "-ar", file], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        else:
+            with open(f"{dir_path}/inputs/{directory}/{filename_no_ext}.in", "r") as test_input:
+                result = subprocess.run([EXE, "-ar", file], stdin = test_input, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+
         ret_code = result.returncode 
 
         success = ret_code == 0 
