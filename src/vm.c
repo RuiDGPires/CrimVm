@@ -142,6 +142,7 @@ void run(Vm vm){
 			// Trap routines
 			case TRP_GETC:
 				vm_push((u32) getchar(), vm);	
+				vm->pc++;
 				break;	
 			// Pops a pointer from the stack and prints until it reaches a \0
 			case TRP_PRNT:
