@@ -43,10 +43,6 @@ void run(Vm vm){
 
 				vm->pc++;
 				goto store_res;
-			case OP_DUMP:
-				printf("%d\n", vm_pop(vm));
-				vm->pc++;
-				break;
 			case OP_STORE:
 				vm->mem[vm->regs[op.args[0]] + get_offset(op.args[2], vm)] = vm->regs[op.args[1]];
 				vm->pc++;
@@ -159,6 +155,11 @@ void run(Vm vm){
 			case TRP_OUT:
 				res = vm_pop(vm);
 				fputc((char) res, stdout);
+				fflush(stdout);
+				vm->pc++;
+				break;
+			case TRP_DUMP:
+				printf("%d\n", vm_pop(vm));
 				fflush(stdout);
 				vm->pc++;
 				break;

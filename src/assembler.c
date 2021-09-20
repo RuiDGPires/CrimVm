@@ -173,10 +173,6 @@ static int parse_op(char word[], int *op){
 		*op = OP_ADD;
 		return MAKE_ARG2(ARG_REG, ARG_REG);	
 	}
-	else if (strcmp(word, "DMP") == 0){
-		*op = OP_DUMP;
-		return MAKE_ARG(ARG_NONE); 
-	}
 	else if (strcmp(word, "STORE") == 0){
 		*op = OP_STORE;
 		return MAKE_ARG2(ARG_MEM, ARG_REG); 
@@ -244,6 +240,9 @@ static int parse_op(char word[], int *op){
 		*op = OP_END;
 		return MAKE_ARG(ARG_NONE);		
 	// TRAP ROUTINES
+	}else if (strcmp(word, "DMP") == 0){
+		*op = TRP_DUMP;
+		return MAKE_ARG(ARG_NONE);	
 	}else if (strcmp(word, "GET") == 0){
 		*op = TRP_GETC;
 		return MAKE_ARG(ARG_NONE);		
