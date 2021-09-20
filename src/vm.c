@@ -37,11 +37,11 @@ void run(Vm vm){
 				vm->pc++;
 				break;
 			case OP_STORE:
-				vm->mem[vm->regs[op.args[0]]] = vm->regs[op.args[1]];
+				vm->mem[vm->regs[op.args[0]] + (u32) op.args[2]] = vm->regs[op.args[1]];
 				vm->pc++;
 				break;
 			case OP_LOAD:
-				res = vm->mem[vm->regs[op.args[1]]];
+				res = vm->mem[vm->regs[op.args[1]] + op.args[2]];
 				vm->pc++;
 				goto store_res;
 			case OP_PUSH:

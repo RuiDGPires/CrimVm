@@ -39,8 +39,6 @@ void load(Vm vm, FILE *file){
 			// RECEIVES (u8, u8)
 			case OP_MOV:
 			case OP_ADD:
-			case OP_STORE:
-			case OP_LOAD:
 			case OP_SUB:
 			case OP_CMP:
 			case OP_AND:
@@ -50,6 +48,24 @@ void load(Vm vm, FILE *file){
 				OP->args[1] = buffer[p++];
 				break;
 
+
+			// MEMORY HANDLING
+			case OP_STORE:
+			case OP_LOAD:
+				OP->args[2] = 0;
+				OP->args[0] = buffer[p++];
+				if (OP->args[0] & 0x80) // Check if ms bit is set, this means if theres is (or not) an offset	
+					OP->args[2] = u32_from_buffer(&p, buffer); // And it goes to THE THIRD ARGUMENT in the Operation struct
+
+				OP->args[0] &= 0x7F; // Clear ms bit
+
+				OP->args[1] = buffer[p++]; // Same thing for the other
+				if (OP->args[1] & 0x80) 
+					OP->args[2] = u32_from_buffer(&p, buffer); 
+				OP->args[1] &= 0x7F; // Clear ms bit
+
+				// THERE CAN ONLY BE ONE OFFSET, AS LOAD AND STORE ONLY HANDLE ONE MEMORY LOCATION AT A TIME
+				break;
 			// RECEIVES (u8, u32)
 			case OP_MVI:
 			case OP_BR:

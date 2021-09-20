@@ -278,6 +278,11 @@ static void write_to_buffer(u8 val){
 	mutexUnlock(&writing_mutex);
 }
 
+static void write_to_buffer_u32(u32 val){
+	for (int i = 3; i >= 0; i--)
+		write_to_buffer((val >> (8*i)) & 0xFF); // Write the offset
+}
+
 static bool is_number(char c){
 	return c >= '0' && c <= '9';
 }
@@ -326,7 +331,20 @@ static void expect_type(u8 type){
 			ASSERT(word[1] == '[', "Unexpected Token: %c", word[1]);
 			ASSERT(word[2] == 'R', "Unexpected Token: %c", word[2]);
 			ASSERT(word[4] == ']', "Unexpected Token: %c", word[4]);
-			write_to_buffer(parse_register(word[3]));
+			// Check if there is any offset
+			if (word[5] == '['){
+				u32 offset = 0;
+				u32 i;
+				for (i = 6; i < MAX_WORD_SIZE-1 && word[i] != ']'; i++);
+				ASSERT(word[i] == ']', "Word exceeds max size");
+				word[i] = '\0';
+				offset = (u32) atol(&word[6]);
+				write_to_buffer(parse_register(word[3]) | 0x80); // Set the most significant bit of the register value to signal an offset
+				write_to_buffer_u32(offset); // Write the offset
+			}else{
+				write_to_buffer(parse_register(word[3]));
+			}
+
 			break;
 
 		case ARG_LABEL_OR_OFFSET:
@@ -345,8 +363,7 @@ static void expect_type(u8 type){
 				val -= pc -1;
 
 
-			for (int i = 3; i >= 0; i--)
-				write_to_buffer((val >> (8 * i)) & 0xFF);
+			write_to_buffer_u32(val); 
 			break;
 
 		case ARG_FLAG:
@@ -378,8 +395,7 @@ static void expect_type(u8 type){
 			else
 				val = (u32) atoi(word); 
 			
-			for (int i = 3; i >= 0; i--)
-				write_to_buffer((val >> (8 * i)) & 0xFF);
+			write_to_buffer_u32(val);
 			break;
 	}
 }
