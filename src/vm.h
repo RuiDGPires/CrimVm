@@ -21,7 +21,6 @@
 #define __VM_H__
 
 #include <stdio.h>
-#include <stdint.h>
 #include "defs.h" 
 
 #define VM_PROG_MEM_SIZE 16384 
