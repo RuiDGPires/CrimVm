@@ -314,6 +314,20 @@ static u8 parse_register(char c){
 	return c - '0';
 }
 
+static u32 parse_special_char(char c){
+	switch(c){
+		case 'n':
+			return '\n';
+		case 't':
+			return '\t';
+		case '\\':
+			return '\\';
+		case '0':
+			return '\0';
+	}
+	return -1;
+}
+
 static void expect_type(u8 type){
 	char word[MAX_WORD_SIZE];
 	get_word(word);
@@ -394,7 +408,16 @@ static void expect_type(u8 type){
 			break;
 		case ARG_VAL:
 		arg_val:
-			if (word[0] == '0' && word[1] == 'x')
+			if (word[0] == '\''){
+				if (word[1] == '\\'){ // If is special char...
+					ASSERT(word[3] == '\'', "Char literals must be contained inside \' \'");
+					val = parse_special_char(word[2]);
+				}else{
+					ASSERT(word[2] == '\'', "Char literals must be contained inside \' \'");
+					val = word[1]; 
+				}
+			}
+			else if (word[0] == '0' && word[1] == 'x')
 				val = hex_to_u32(&word[2]);
 			else
 				val = (u32) atoi(word); 
