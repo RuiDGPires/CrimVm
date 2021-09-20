@@ -1,11 +1,6 @@
 # CrimVm
 
-One more try at writting a virtual machine... 
-Project is still very recent and code is slightly hammered..
-
-
-[Here](Operations.md) is a list of the current supported opperations
-
+Specs of the VM can be found [here] (Specs.md).
 
 ## Example
 
