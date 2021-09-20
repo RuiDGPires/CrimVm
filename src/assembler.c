@@ -237,6 +237,16 @@ static int parse_op(char word[], int *op){
 	}else if (strcmp(word, "END") == 0){
 		*op = OP_END;
 		return MAKE_ARG(ARG_NONE);		
+	// TRAP ROUTINES
+	}else if (strcmp(word, "GET") == 0){
+		*op = TRP_GETC;
+		return MAKE_ARG(ARG_NONE);		
+	}else if (strcmp(word, "OUT") == 0){
+		*op = TRP_OUT;
+		return MAKE_ARG(ARG_NONE);		
+	}else if (strcmp(word, "PRNT") == 0){
+		*op = TRP_PRNT;
+		return MAKE_ARG(ARG_NONE);		
 	} else{
 		// SKIP LABELS
 		u32 last_char_index = strlen(word) - 1;
@@ -521,6 +531,7 @@ void assemble(char *file_in, char *file_out){
 	free(convertingThread);
 	free(writingThread);
 	
+	ht_destroy(symb_table);
 	pthread_mutex_destroy(&reading_mutex);
 	pthread_mutex_destroy(&writing_mutex);
 }
