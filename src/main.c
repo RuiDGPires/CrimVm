@@ -20,8 +20,20 @@
 #include "vm.h"
 #include "util.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+void print_help(){
+	printf("CrimVm v0.1.0\n");
+
+	printf("\nSupported commands:\n\n");
+	printf("  [-r] <file>\t  Run binary <file>\n");
+	printf("  -a <file>.cas\t  Assemble <file>.cas to <file>.o\n");
+	printf("     -o <file>\t  Specifies the output file\n");
+	printf("  -ar <file>\t  Assemble and run <file>. Does not generate any resulting file\n");
+	printf("\nSource code available <https://github.com/RuiDGPires/CrimVm>\n");
+	printf("VM documentation available at <https://github.com/RuiDGPires/CrimVm/blob/master/Specs.md>\n");
+	fflush(stdout);
+}
+
+
 
 void run_binary(char file_path[]){
 	Vm_ vm;
@@ -53,8 +65,12 @@ int main(int argc, char *argv[]){
 		THROW_ERROR("Invalid usage, please use -h to see supported arguments");
 
 	if (argc == 2){
-			run_binary(argv[1]);
+		if(argv[1][0] == '-' && argv[1][1] == 'h'){
+			print_help();
 			return 0;
+		}
+		run_binary(argv[1]);
+		return 0;
 	}
 
 	bool request_cas_file = FALSE, request_run_file = FALSE, request_out_file = FALSE;
