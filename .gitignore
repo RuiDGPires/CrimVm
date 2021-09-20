@@ -1,6 +1,6 @@
 .vscode
 *.swp
 *.bin
-a.out
+crimvm
 *.o
 Bytecode.md

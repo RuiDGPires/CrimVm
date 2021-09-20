@@ -22,7 +22,7 @@ UNDERLINE = '\033[4m'
 
 dir_path = dir_path = os.path.dirname(os.path.realpath(__file__))
 
-EXE = f"{dir_path}/../a.out"
+EXE = f"{dir_path}/../crimvm"
 
 DIRS = next(os.walk(f"{dir_path}/inputs/."))[1]
 

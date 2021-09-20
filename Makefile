@@ -1,4 +1,4 @@
-TARGET=a.out
+TARGET=crimvm
 CC=gcc
 
 C_FILES = $(wildcard src/*.c)

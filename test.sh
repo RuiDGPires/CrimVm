@@ -1,6 +1,6 @@
 #!/bin/sh
 
-FILE=./a.out
+FILE=./crimvm
 if [ ! -f "$FILE" ]; then
 	make clean debug 
 fi

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILE=./a.out
+FILE=./crimvm
 test=./tests/inputs/basic/test1.cas
 TIMES=300
 for ((n=0;n<$TIMES;n++)); do
