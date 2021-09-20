@@ -255,9 +255,19 @@ static int parse_op(char word[], int *op){
 	}else if (strcmp(word, "DEC") == 0){
 		*op = OP_DEC;
 		return MAKE_ARG(ARG_REG);		
+	}else if (strcmp(word, "INC") == 0){
+		*op = OP_INC;
+		return MAKE_ARG(ARG_REG);		
+	}else if (strcmp(word, "MUL") == 0){
+		*op = OP_MUL;
+		return MAKE_ARG2(ARG_REG, ARG_REG);		
+	}else if (strcmp(word, "DIV") == 0){
+		*op = OP_DIV;
+		return MAKE_ARG2(ARG_REG, ARG_REG);		
 	}else if (strcmp(word, "END") == 0){
 		*op = OP_END;
-		return MAKE_ARG(ARG_NONE);		
+		return MAKE_ARG(ARG_NONE);
+
 	// TRAP ROUTINES
 	}else if (strcmp(word, "DMP") == 0){
 		*op = TRP_DUMP;

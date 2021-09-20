@@ -75,6 +75,8 @@ void load(Vm vm, FILE *file){
 			case OP_AND:
 			case OP_OR:
 			case OP_XOR:
+			case OP_MUL:
+			case OP_DIV:
 				OP->args[0] = buffer[p++];
 				OP->args[1] = buffer[p++];
 				break;

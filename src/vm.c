@@ -154,6 +154,14 @@ void run(Vm vm){
 				res = vm->regs[op.args[0]] - 1;
 				vm->pc++;
 				goto store_res;
+			case OP_MUL:
+				res = vm->regs[op.args[0]] * vm->regs[op.args[1]];
+				vm->pc++;
+				goto store_res;
+			case OP_DIV:
+				res = (u32) vm->regs[op.args[0]] / vm->regs[op.args[1]];
+				vm->pc++;
+				goto store_res;
 			case OP_END:
 				return;
 

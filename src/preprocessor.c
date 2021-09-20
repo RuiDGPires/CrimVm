@@ -213,6 +213,10 @@ static void parse_word(char word[], u32 *pc){
 		(*pc)++;
 	}else if (strcmp(word, "DEC") == 0){
 		(*pc)++;
+	}else if (strcmp(word, "MUL") == 0){
+		(*pc)++;
+	}else if (strcmp(word, "DIV") == 0){
+		(*pc)++;
 	}else if (strcmp(word, "END") == 0){
 		(*pc)++;
 	}else if (strcmp(word, "GET") == 0){
