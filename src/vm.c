@@ -9,6 +9,17 @@ bool check_flags(u8 vm_flags, u8 cond){
 	return (vm_flags & cond) || cond == 0;
 }
 
+u32 get_offset(u32 arg, Vm vm){
+	if (arg == 0)
+		return 0;
+
+	if (arg & 0x80000000){
+		return vm->regs[arg & 0xFF];
+	}else{
+		return arg;
+	}
+}
+
 void run(Vm vm){
 	while(vm->pc < vm->prog_length){
 		Operation op = vm->program[vm->pc];
@@ -37,11 +48,11 @@ void run(Vm vm){
 				vm->pc++;
 				break;
 			case OP_STORE:
-				vm->mem[vm->regs[op.args[0]] + (u32) op.args[2]] = vm->regs[op.args[1]];
+				vm->mem[vm->regs[op.args[0]] + get_offset(op.args[2], vm)] = vm->regs[op.args[1]];
 				vm->pc++;
 				break;
 			case OP_LOAD:
-				res = vm->mem[vm->regs[op.args[1]] + op.args[2]];
+				res = vm->mem[vm->regs[op.args[1]] + get_offset(op.args[2], vm)];
 				vm->pc++;
 				goto store_res;
 			case OP_PUSH:

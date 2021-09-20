@@ -333,14 +333,19 @@ static void expect_type(u8 type){
 			ASSERT(word[4] == ']', "Unexpected Token: %c", word[4]);
 			// Check if there is any offset
 			if (word[5] == '['){
-				u32 offset = 0;
-				u32 i;
-				for (i = 6; i < MAX_WORD_SIZE-1 && word[i] != ']'; i++);
-				ASSERT(word[i] == ']', "Word exceeds max size");
-				word[i] = '\0';
-				offset = (u32) atol(&word[6]);
 				write_to_buffer(parse_register(word[3]) | 0x80); // Set the most significant bit of the register value to signal an offset
-				write_to_buffer_u32(offset); // Write the offset
+				if (word[6] == 'R'){ // IF IT IS A REGISTER
+					write_to_buffer(parse_register(word[7]) | 0x80); // Set the ms bit
+					ASSERT(word[8] == ']', "Unexpected Token: %c", word[8]);
+				}else{
+					u32 offset = 0;
+					u32 i;
+					for (i = 6; i < MAX_WORD_SIZE-1 && word[i] != ']'; i++);
+					ASSERT(word[i] == ']', "Word exceeds max size");
+					word[i] = '\0';
+					offset = (u32) atol(&word[6]);
+					write_to_buffer_u32(offset); // Write the offset
+				}
 			}else{
 				write_to_buffer(parse_register(word[3]));
 			}

@@ -5,10 +5,22 @@
 
 #define LOAD_BUFFER_SIZE VM_PROG_MEM_SIZE
 
-u32 u32_from_buffer(u32 *p, u8 buffer[]){
+static u32 u32_from_buffer(u32 *p, u8 buffer[]){
 	u32 val = 0;
 	for (int i = 0; i < 4; i++)
 		val = (val << 8) | (buffer[(*p)++] & 0xFF); 	
+	return val;
+}
+
+static u32 get_offset(u32 *p,u8 *buffer){
+	u32 val = buffer[(*p)++];
+	if (val & 0x80)
+		return (val & 0x7F) | 0x80000000;
+	else{
+		val = (val << 8) | buffer[(*p)++];
+		val = (val << 8) | buffer[(*p)++];
+		val = (val << 8) | buffer[(*p)++];
+	}
 	return val;
 }
 
@@ -55,13 +67,13 @@ void load(Vm vm, FILE *file){
 				OP->args[2] = 0;
 				OP->args[0] = buffer[p++];
 				if (OP->args[0] & 0x80) // Check if ms bit is set, this means if theres is (or not) an offset	
-					OP->args[2] = u32_from_buffer(&p, buffer); // And it goes to THE THIRD ARGUMENT in the Operation struct
+					OP->args[2] = get_offset(&p, buffer); // And it goes to THE THIRD ARGUMENT in the Operation struct
 
 				OP->args[0] &= 0x7F; // Clear ms bit
 
 				OP->args[1] = buffer[p++]; // Same thing for the other
 				if (OP->args[1] & 0x80) 
-					OP->args[2] = u32_from_buffer(&p, buffer); 
+					OP->args[2] = get_offset(&p, buffer);
 				OP->args[1] &= 0x7F; // Clear ms bit
 
 				// THERE CAN ONLY BE ONE OFFSET, AS LOAD AND STORE ONLY HANDLE ONE MEMORY LOCATION AT A TIME
