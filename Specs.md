@@ -95,3 +95,24 @@ The result of the operation (except CMP) is always stored in the first register.
 | P | Value is positive |
 | N | Value is negative |
 | O | Value overflowed |
+
+---
+
+## Other
+
+Labels can be assigned by writing a word (no spacing) and a ':' at the end, like so:
+```
+this_is_a_label:
+MVI R1 20
+(...)
+JMP this_is_a_label
+```
+
+The name "\_start:" os reserved to point to where the program execution should start. For example:
+```
+MVI R1 20
+
+_start:
+(...)
+```
+Here, the operation "MVI R1 20" is never executed (unless there is a jump to it) because the program starts ahead of it.
