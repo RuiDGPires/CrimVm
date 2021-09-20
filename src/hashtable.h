@@ -20,11 +20,12 @@
 #ifndef __HASTABLE_H__
 #define __HASTABLE_H__
 
+#define INVALID_ITEM 0xFFFFFFFF
+#include "util.h"
+
+typedef struct ll_node *ll_Link;
 #define HASHTABLE_SIZE 113
-
-#include "linkedlist.h"
-
-typedef struct {
+typedef struct{
 	ll_Link table[HASHTABLE_SIZE];	
 } Hashtable;
 

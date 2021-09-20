@@ -34,4 +34,5 @@ typedef uint8_t bool;
 #define TRUE 1
 #define FALSE 0
 
+#define INVALID_ITEM 0xFFFFFFFF
 #endif
