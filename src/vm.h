@@ -42,7 +42,7 @@ typedef struct {
 } Operation;
 
 // R0 is ALWAYS equal to 0. Other registers include 3 general purpose registers, a stack pointer and a return register.
-enum reg_type{R0 = 0, R1, R2, R3, SP, RE, R_COUNT};
+enum reg_type{R0 = 0, R1, R2, R3, R4, SP, RE, R_COUNT};
 typedef struct vm_s {
 	Loader loader;
 	// MemManager memmanager;
