@@ -79,5 +79,5 @@ The result of the operation (except CMP) is always stored in the first register.
 | R2 | General purpose register | No |
 | R3 | Auxiliar register | Yes |
 | R4 | Auxiliar register | Yes |
-| SP | Stack pointer | Yes |
+| SP | Stack pointer | Yes (Except for passed arguents) |
 | RE | Return program address | Yes |
