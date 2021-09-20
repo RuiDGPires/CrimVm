@@ -66,7 +66,7 @@ The result of the operation (except CMP) is always stored in the first register.
 | TRAP | DESCRIPTION |
 | :---: | :--- |
 | GET | Waits for a character via stdin and pushes the obtained value |
-| OUT | Pops a value and prints it as an ASCII code |
+| OUT | Pops a value and prints it as an ASCII char |
 | PRNT | Pops a memory address and prints every following space in memory until it reaches '\0' |
 | DMP | Pops a value from the stack and prints it as an integer|
 
