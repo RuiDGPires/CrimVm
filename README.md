@@ -8,11 +8,11 @@ Using [example.cas](tests/inputs/example/example.cas) as an example:
 
 First, assemble the text file into an object file
 
->./a.out -a example.cas -o example.o
+>./crimvm -a example.cas -o example.o
 
 Then, run the file
 
->./a.out example.o
+>./crimvm example.o
 
 Output:
 
@@ -21,5 +21,5 @@ Output:
 **or**
 
 Simply assemble and run (generates no files)
->./a.out -ar example.cas
+>./crimvm -ar example.cas
 
