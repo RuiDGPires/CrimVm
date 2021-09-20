@@ -62,14 +62,14 @@ n_files_passed = 0
 print()
 ALL_TESTS_PASSED = True
 for directory in DIRS:
-    if not os.path.exists(f"{dir_path}/inputs/{directory}/section.txt"): continue
+    if not os.path.exists(f"{dir_path}/inputs/{directory}/.section"): continue
 
     section_tests_passed = True
     INPUT_FILES = sorted(glob(f"{dir_path}/inputs/{directory}/*"))
     t = str.maketrans("\n", " ") 
 
     section_name = ""
-    with open(f"{dir_path}/inputs/{directory}/section.txt") as f:
+    with open(f"{dir_path}/inputs/{directory}/.section") as f:
         section_name = f.read().translate(t) 
 
     if section_name[-1] == " ":
