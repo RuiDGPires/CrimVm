@@ -70,7 +70,10 @@ The result of the operation (except CMP) is always stored in the first register.
 | PRNT | Pops a memory address and prints every following space in memory until it reaches '\0' |
 | DMP | Pops a value from the stack and prints it as an integer|
 
-### Registers
+---
+
+
+## Registers
 
 | Register | Decription | Preserved after a function call |
 | :---: | :--- | :---: |
@@ -81,3 +84,14 @@ The result of the operation (except CMP) is always stored in the first register.
 | R4 | Auxiliar register | Yes |
 | SP | Stack pointer | Yes (Except for passed arguents) |
 | RE | Return program address | Yes |
+
+---
+
+## Flags
+
+| Flag | Description |
+| :---: | :--- |
+| Z | Value is zero |
+| P | Value is positive |
+| N | Value is negative |
+| O | Value overflowed |
