@@ -1,5 +1,5 @@
 .vscode
 *.swp
 *.bin
-crimvm
+crimvm*
 *.o

@@ -3,18 +3,18 @@ CC=gcc
 
 C_FILES = $(wildcard src/*.c)
 H_FILES = $(wildcard src/*.h)
-CFLAGS= 
 
-default: debug
+default: debug release
+
+$(TARGET)_dbg: $(C_FILES) $(H_FILES)
+	@$(CC) -Wall -O0 -D DEBUG -g -pthread $^ -o $@
 
 $(TARGET): $(C_FILES) $(H_FILES)
-	@$(CC) -Wall $(CFLAGS) -pthread $^ -o $@
+	@$(CC) -Wall -O3 $(CFLAGS) -pthread $^ -o $@
 
-debug: CFLAGS += -O0 -D DEBUG -g
-debug: $(TARGET)
+debug: $(TARGET)_dbg
 
-release: CFLAGS += -O3
 release: $(TARGET)
 
 clean:
-	rm -f $(TARGET)
+	@rm -f $(TARGET)*
