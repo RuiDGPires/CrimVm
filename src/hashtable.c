@@ -61,14 +61,14 @@ void llPush(ll_Link *head, const char name[], u32 val){
 		ASSERT(head != NULL, "Error allocating memory");
 		strcpy((*head)->name, name);
 		(*head)->val = val;
-    (*head)->next = NULL;
-    (*head)->size = 1;
+		(*head)->next = NULL;
+		(*head)->size = 1;
   }else{
 		ll_Link new = (ll_Link) malloc(sizeof(struct ll_node));
 		ASSERT(new != NULL, "Error allocating memory");
 		strcpy(new->name, name);
 		new->val = val;
-    new->next = *head;
+		new->next = *head;
     new->size = (*head)->size + 1;
 		(*head) = new;
   }
