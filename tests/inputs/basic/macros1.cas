@@ -1,0 +1,6 @@
+%define x 100
+
+MVI R1 x
+
+PSH R1
+DMP
