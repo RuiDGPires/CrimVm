@@ -1,0 +1,7 @@
+;@[Err]
+%define x 10
+%define x 100
+
+MVI R1 10
+PSH R1
+DMP
