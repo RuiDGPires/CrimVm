@@ -1,5 +1,5 @@
 MOV R1 R0
 
-STR m[R1] "This is a string... CRIM"
+STR m[R1] "This is a string... CRIM\n"
 PSH R1
 PRNT
