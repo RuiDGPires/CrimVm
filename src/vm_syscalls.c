@@ -3,7 +3,12 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-enum sc_code {SYS_OPEN = 0, SYS_CLOSE, SYS_WRITE, SYS_READ, SYS_REMOVE};
+enum sc_code {SYS_OPEN = 0, 
+							SYS_CLOSE = 1,
+							SYS_WRITE = 2,
+							SYS_READ = 3,
+						 	SYS_REMOVE = 4};
+
 enum fopen_mode {F_READ = 0, F_WRITE};
 
 static void get_array(char *buff, u32 address, u32 size, Vm vm){

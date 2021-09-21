@@ -203,7 +203,7 @@ void run(Vm vm){
 
 			// Sys calls are usefull to add functionallity to the core of the VM quickly
 			case TRP_SYS:
-				vm_syscall(vm_pop(vm), vm);
+				vm_syscall(op.args[0], vm);
 				vm->pc++;
 				break;
 			default:

@@ -108,6 +108,10 @@ void load(Vm vm, FILE *file){
 				OP->args[1] = u32_from_buffer(&p, buffer); 
 				break;
 
+			// Receives (u32)
+			case TRP_SYS:
+				OP->args[0] = u32_from_buffer(&p, buffer);
+				break;
 			// RECEIVES (u8)
 			case OP_PUSH:
 			case OP_POP:
@@ -126,7 +130,6 @@ void load(Vm vm, FILE *file){
 			case TRP_OUT:
 			case TRP_PRNT:
 			case TRP_DUMP:
-			case TRP_SYS:
 			break;
 
 			// OTHERS

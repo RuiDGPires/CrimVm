@@ -339,7 +339,7 @@ static int parse_op(char word[], int *op){
 		return MAKE_ARG(ARG_NONE);		
 	}else if (strcmp(word, "SYS") == 0){
 		*op = TRP_SYS;
-		return MAKE_ARG(ARG_NONE);		
+		return MAKE_ARG(ARG_VAL);		
 	} else{
 		// SKIP LABELS
 		u32 last_char_index = strlen(word) - 1;

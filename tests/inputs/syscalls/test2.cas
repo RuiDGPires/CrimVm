@@ -9,9 +9,7 @@ MVI R1 1					; Mode
 PSH R1
 
 
-MVI R1 0					; Open
-PSH R1
-SYS 
+SYS 0					; Open
 
 POP R1						; Fd 
 
@@ -25,17 +23,11 @@ PSH R2
 MVI R2 14					; size
 PSH R2
 
-MVI R2 2 ; write
-PSH R2
-SYS
+SYS 2 ; write
 
 POP R0
 PSH R1
-MVI R2 1 ; Close
-PSH R2
-SYS 
-
-
+SYS 1 ; Close
 
 ; OPEN AND READ
 MVI R1 3
@@ -45,9 +37,7 @@ PSH R1
 MVI R1 0 ; Read mode
 PSH R1
 
-MVI R1 0 ; Open syscall
-PSH R1
-SYS
+SYS 0 ; Open syscall
 
 POP R1 ; fd
 PSH R1
@@ -57,26 +47,20 @@ PSH R2
 MVI R3 14
 PSH R3
 
-MVI R3 3 ; Read
-PSH R3
-SYS
+SYS 3 ; Read
+
 POP R0
 
 ; Close
 POP R0
 PSH R1
-MVI R3 1
-PSH R3 
-SYS
+SYS 1
 
 MVI R1 90 
 STR m[R1] "file.txt"
 PSH R1
 
-MVI R1 4
-PSH R1
-SYS
-
+SYS 4
 
 ; Loop to print
 
