@@ -106,7 +106,7 @@ Args and return are done via stack and are presented by the order in which they 
 | ID | NAME |  Args | Return | Description |
 | :---: | :---: | :---: | :---: | :--- |
 | 0 | OPEN | Address, Mode | Fd | Opens the file with name starting at **Address** with **Mode**. Returns the file descriptor |
-| 1 | CLOSE | Fd | Closes the file descriptor **fd**| 
+| 1 | CLOSE | Fd | | Closes the file descriptor **fd**| 
 | 2 | WRITE | Fd, Address, N | n | Writes **N** bytes (memory spaces) starting at **Address** to **Fd**, returns the number of bytes written |
 | 3 | READ | Fd, Address, N | n | Reads **N** bytes (memory spaces) from **Fd** to the **N** locations starting at **Address**, returns the number of bytes read |
 | 4 | REMOVE | Address | | Removes the file with name starting at **Address** |
