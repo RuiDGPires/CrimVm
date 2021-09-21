@@ -110,12 +110,28 @@ static bool is_whitespace(char c){
 	return c == ' ' || c == '\n' || c == '\t';
 }
 
-#define MAX_WORD_SIZE 32 
+static char parse_special_char(char c){
+	switch(c){
+		case 'n':
+			return '\n';
+		case 't':
+			return '\t';
+		case '\\':
+			return '\\';
+		case '0':
+			return '\0';
+		case '"':
+			return '"';
+	}
+	return -1;
+}
 
 static bool ends_in_dot = FALSE;
 static int get_word(char *word_buffer){
 	u32 p = 0;
 	bool is_comment = FALSE;
+	bool is_string = FALSE;
+	bool read_slash = FALSE;
 
 	if (ends_in_dot)
 		ends_in_dot = FALSE;
@@ -142,18 +158,45 @@ static int get_word(char *word_buffer){
 		signalCondition(&reading_can_produce);
 		mutexUnlock(&reading_mutex);
 
+
+		if (!is_comment && !read_slash && c == '\\'){
+			read_slash = TRUE; 
+			continue;
+		}
+		
+		// Special chars
+		if (!is_comment && read_slash){
+			word_buffer[p++] = parse_special_char(c);
+			read_slash = FALSE;
+			continue;
+		}
+
+		if (!is_comment && c == '"'){
+			is_string = !is_string;
+			if (!is_string){
+				word_buffer[p] = '\0';
+				break;
+			}
+			continue;
+		}
+		if (!is_comment && is_string){
+			word_buffer[p++] = c;
+			continue;
+		}
+
 		// Comments
-		if (is_comment)
+		if (is_comment){
 			is_comment = c != '\n';
-		else
+		}else	if (word_buffer[0] != '\'' || p != 1)
 			is_comment = c == ';';
 
-		if (c == 0 || c == '\0' || is_whitespace(c) || is_comment) 
+		if (c == '\0' || is_whitespace(c) || is_comment){ 
+			if (is_comment) continue;
 			if (p || c == '\0'){
 				word_buffer[p] = '\0';
 				break;
 			}else continue;	
-		else{ 
+		}else{ 
 			// Special case for dot
 			if (c == '.'){
 				ends_in_dot = TRUE;
@@ -173,6 +216,7 @@ enum arg_type{ARG_NONE = 0,
 							ARG_FLAG,
 							ARG_LABEL_OR_VAL,
 							ARG_LABEL_OR_OFFSET,
+							ARG_STR,
 							};
 
 #define MAKE_ARG(type) type
@@ -264,6 +308,9 @@ static int parse_op(char word[], int *op){
 	}else if (strcmp(word, "DIV") == 0){
 		*op = OP_DIV;
 		return MAKE_ARG2(ARG_REG, ARG_REG);		
+	}else if (strcmp(word, "STR") == 0){
+		*op = OP_STR;
+		return MAKE_ARG2(ARG_MEM, ARG_STR);		
 	}else if (strcmp(word, "END") == 0){
 		*op = OP_END;
 		return MAKE_ARG(ARG_NONE);
@@ -343,19 +390,6 @@ static u8 parse_register(char c){
 	return c - '0';
 }
 
-static u32 parse_special_char(char c){
-	switch(c){
-		case 'n':
-			return '\n';
-		case 't':
-			return '\t';
-		case '\\':
-			return '\\';
-		case '0':
-			return '\0';
-	}
-	return -1;
-}
 
 static void expect_type(u8 type){
 	char word[MAX_WORD_SIZE];
@@ -367,6 +401,19 @@ static void expect_type(u8 type){
 		case ARG_REG:
 			ASSERT(word[0] == 'R', "Unexpected Token: %c", word[0]);
 			write_to_buffer(parse_register(word[1]));	
+			break;
+		case ARG_STR:
+			{
+				u8 i = 0;
+				for(; word[i] != '\0' && i < MAX_WORD_SIZE; i++);
+
+				ASSERT(word[i] == '\0', "String size is too big");
+
+				// WRITE THE SIZE OF THE STRING IN 8 BITS
+				write_to_buffer(i);
+				for (u8 j = 0; j < i; j++)
+					write_to_buffer(word[j]);
+			}
 			break;
 		case ARG_MEM:
 			ASSERT(word[0] == 'm', "Unexpected Token: %c", word[0]);
@@ -438,15 +485,9 @@ static void expect_type(u8 type){
 		case ARG_VAL:
 		arg_val:
 			if (word[0] == '\''){
-				if (word[1] == '\\'){ // If is special char...
-					ASSERT(word[3] == '\'', "Char literals must be contained inside \' \'");
-					val = parse_special_char(word[2]);
-				}else{
-					ASSERT(word[2] == '\'', "Char literals must be contained inside \' \'");
-					val = word[1]; 
-				}
-			}
-			else if (word[0] == '0' && word[1] == 'x')
+				ASSERT(word[2] == '\'', "Char literals must be contained inside \' \'");
+				val = word[1]; 
+			}else if (word[0] == '0' && word[1] == 'x')
 				val = hex_to_u32(&word[2]);
 			else
 				val = (u32) atoi(word); 

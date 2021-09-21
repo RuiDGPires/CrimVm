@@ -20,7 +20,6 @@
 #ifndef __HASTABLE_H__
 #define __HASTABLE_H__
 
-#define INVALID_ITEM 0xFFFFFFFF
 #include "util.h"
 
 typedef struct ll_node *ll_Link;

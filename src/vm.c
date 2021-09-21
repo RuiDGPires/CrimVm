@@ -63,11 +63,11 @@ void run(Vm vm){
 				vm->pc++;
 				goto store_res;
 			case OP_STORE:
-				vm->mem[vm->regs[op.args[0]] + get_offset(op.args[2], vm)] = vm->regs[op.args[1]];
+				vm->mem[vm->regs[op.args[0]] + get_offset(op.u32_aux, vm)] = vm->regs[op.args[1]];
 				vm->pc++;
 				break;
 			case OP_LOAD:
-				res = vm->mem[vm->regs[op.args[1]] + get_offset(op.args[2], vm)];
+				res = vm->mem[vm->regs[op.args[1]] + get_offset(op.u32_aux, vm)];
 				vm->pc++;
 				goto store_res;
 			case OP_PUSH:
@@ -162,6 +162,15 @@ void run(Vm vm){
 				res = (u32) vm->regs[op.args[0]] / vm->regs[op.args[1]];
 				vm->pc++;
 				goto store_res;
+			case OP_STR:
+				{
+					u8 i = 0;
+					for (; op.u8p_aux[i] != '\0'; i++)
+						vm->mem[vm->regs[op.args[0]] + get_offset(op.u32_aux, vm) + i] = op.u8p_aux[i];
+					vm->mem[vm->regs[op.args[0]] + get_offset(op.u32_aux, vm) + i] = '\0';
+					vm->pc++;
+				}
+				break;
 			case OP_END:
 				return;
 
@@ -228,6 +237,11 @@ void vm_init(Vm vm){
 void vm_destroy(Vm vm){
 	if (vm->loader.file != NULL)
 		fclose(vm->loader.file);
+
+	for (u32 i = 0; i < vm->prog_length; i++){
+		if (vm->program[i].u8p_aux != NULL)
+			free(vm->program[i].u8p_aux);
+	}
 }
 
 void vm_load(Vm vm, char filename[]){

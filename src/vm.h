@@ -26,9 +26,9 @@
 #define VM_PROG_MEM_SIZE 16384 
 #define VM_MEM_SIZE 1024
 
-#define OP_MAX_ARGS 3
+#define OP_MAX_ARGS 2 
 
-enum op_code {OP_MVI = 0, OP_MOV, OP_ADD,  OP_STORE, OP_LOAD, OP_PUSH, OP_POP, OP_SUB, OP_CMP, OP_BR, OP_JMP, OP_RET, OP_AND, OP_OR, OP_XOR, OP_NOT, OP_SHR, OP_SHL,  OP_END, OP_INC, OP_DEC, OP_MUL, OP_DIV, LABEL};
+enum op_code {OP_MVI = 0, OP_MOV, OP_ADD,  OP_STORE, OP_LOAD, OP_PUSH, OP_POP, OP_SUB, OP_CMP, OP_BR, OP_JMP, OP_RET, OP_AND, OP_OR, OP_XOR, OP_NOT, OP_SHR, OP_SHL,  OP_END, OP_INC, OP_DEC, OP_MUL, OP_DIV, OP_STR, LABEL};
 enum trap_code {TRP_GETC = 0x30, TRP_OUT, TRP_PRNT, TRP_DUMP};
 
 enum flags {FLG_ZERO = 1	<< 0,
@@ -57,6 +57,8 @@ typedef struct loader_s {
 typedef struct {
 	u8 code;
 	u32 args[OP_MAX_ARGS];	
+	u32 u32_aux;
+	u8 *u8p_aux;
 } Operation;
 
 // R0 is ALWAYS equal to 0. Other registers include 3 general purpose registers, a stack pointer and a return register.

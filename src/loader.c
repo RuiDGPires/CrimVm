@@ -66,6 +66,7 @@ void load(Vm vm, FILE *file){
 		// Get the location to store the new operation and increment program count immediately
 		Operation *OP = &(vm->program[(vm->prog_length)++]);
 		OP->code = buffer[p++];
+		OP->u8p_aux = NULL;
 		switch (OP->code){
 			// RECEIVES (u8, u8)
 			case OP_MOV:
@@ -85,16 +86,16 @@ void load(Vm vm, FILE *file){
 			// MEMORY HANDLING
 			case OP_STORE:
 			case OP_LOAD:
-				OP->args[2] = 0;
+				OP->u32_aux = 0;
 				OP->args[0] = buffer[p++];
 				if (OP->args[0] & 0x80) // Check if ms bit is set, this means if theres is (or not) an offset	
-					OP->args[2] = get_offset(&p, buffer); // And it goes to THE THIRD ARGUMENT in the Operation struct
+					OP->u32_aux = get_offset(&p, buffer); // And it goes to THE THIRD ARGUMENT in the Operation struct
 
 				OP->args[0] &= 0x7F; // Clear ms bit
 
 				OP->args[1] = buffer[p++]; // Same thing for the other
 				if (OP->args[1] & 0x80) 
-					OP->args[2] = get_offset(&p, buffer);
+					OP->u32_aux = get_offset(&p, buffer);
 				OP->args[1] &= 0x7F; // Clear ms bit
 
 				// THERE CAN ONLY BE ONE OFFSET, AS LOAD AND STORE ONLY HANDLE ONE MEMORY LOCATION AT A TIME
@@ -129,6 +130,20 @@ void load(Vm vm, FILE *file){
 
 			// OTHERS
 			case LABEL:
+				break;
+			case OP_STR:
+				{
+					OP->args[0] = buffer[p++];
+					// THIS MEMORY MUST BE FREE'D AT THE END OF PROGRAM EXECUTION
+					u8 size = buffer[p++];
+
+					OP->u8p_aux = malloc(sizeof(u8)*(size + 1));
+					u8 i = 0;
+					for(; i < size; i++){
+						OP->u8p_aux[i] = buffer[p++];
+					}
+					OP->u8p_aux[i] = '\0';
+				}
 				break;
 			default:
 				THROW_ERROR("Unkown OPCode");

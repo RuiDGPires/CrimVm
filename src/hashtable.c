@@ -23,9 +23,9 @@
 #include "util.h"
 
 typedef struct ll_node *ll_Link;
-#define MAX_STRING_SIZE 32
+
 struct ll_node{
-	char name[MAX_STRING_SIZE];
+	char name[MAX_WORD_SIZE];
 	u32 val;
   u32 size;
   ll_Link next;

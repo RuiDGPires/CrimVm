@@ -108,8 +108,6 @@ static bool is_whitespace(char c){
 	return c == ' ' || c == '\n' || c == '\t';
 }
 
-#define MAX_WORD_SIZE 32 
-
 static int get_word(char *word_buffer){
 	u32 p = 0;
 	bool is_comment = FALSE;
