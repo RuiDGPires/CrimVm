@@ -230,6 +230,8 @@ static void parse_word(char word[], u32 *pc){
 		(*pc)++;
 	}else if (strcmp(word, "GET") == 0){
 		(*pc)++;
+	}else if (strcmp(word, "STR") == 0){
+		(*pc)++;
 	}else if (strcmp(word, "OUT") == 0){
 		(*pc)++;
 	}else if (strcmp(word, "PRNT") == 0){
