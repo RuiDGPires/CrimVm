@@ -80,12 +80,21 @@ for directory in DIRS:
     for file in INPUT_FILES:
         if os.path.splitext(file)[-1] != ".cas": continue
         # Check if test file needs input file
-        needs_input = False
-        first_line = ""
+        flg_needs_input = False
+        flg_test_error = False
+
+        test_flags = ""
         with open(file, 'r') as f:
-            first_line = f.readline()
-        if first_line.replace(" ", "").replace("\n", "") == ";@[in]":
-            needs_input = True
+            test_flags = f.readline().replace(" ", "").replace("\n", "")
+        
+        if test_flags[0:3] == ";@[":
+            assert test_flags[-1] == ']'
+            test_flags = test_flags[3:-1].split(",")
+            for flag in test_flags:
+                if flag.upper() == "IN":
+                    flg_needs_input = True
+                elif flag.upper() == "ERR":
+                    flg_test_error = True
 
         # GET FILE NAME
         filename = os.path.basename(file)
@@ -96,7 +105,7 @@ for directory in DIRS:
 
         # EXECUTE PROGRAM
         result = 0
-        if not needs_input:
+        if not flg_needs_input:
             result = subprocess.run([EXE, "-ar", file], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
         else:
             with open(f"{dir_path}/inputs/{directory}/{filename_no_ext}.in", "r") as test_input:
@@ -111,7 +120,13 @@ for directory in DIRS:
         if success:
             with open(out_file, "r") as f:
                 file_text = f.read();
-            passed  = file_text == result.stdout.decode('ascii')
+            passed = file_text == result.stdout.decode('ascii')
+        else:
+            if flg_test_error:
+                with open(out_file, "r") as f:
+                    file_text = f.read();
+                passed = file_text == result.stderr.decode('ascii')
+            
 
         if not passed:
             section_text += FAIL + "fail " + ENDC + ":\t" + filename + "\n"
