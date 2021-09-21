@@ -314,6 +314,15 @@ static int parse_op(char word[], int *op){
 	}else if (strcmp(word, "END") == 0){
 		*op = OP_END;
 		return MAKE_ARG(ARG_NONE);
+	}else if (strcmp(word, "%define") == 0){
+		// Ignore the two next words
+		get_word(word);
+		get_word(word);
+		*op = IGNORE;
+		if (get_word(word))
+			return parse_op(word, op);
+		else
+			return MAKE_ARG(ARG_NONE);		
 
 	// TRAP ROUTINES
 	}else if (strcmp(word, "DMP") == 0){
@@ -332,7 +341,7 @@ static int parse_op(char word[], int *op){
 		// SKIP LABELS
 		u32 last_char_index = strlen(word) - 1;
 		if (word[last_char_index] == ':'){
-			*op = LABEL;
+			*op = IGNORE;
 			return MAKE_ARG(ARG_NONE);	
 		}
 		else THROW_ERROR("Unkown operation: %s", word);
@@ -489,8 +498,10 @@ static void expect_type(u8 type){
 				val = word[1]; 
 			}else if (word[0] == '0' && word[1] == 'x')
 				val = hex_to_u32(&word[2]);
-			else
+			else if (is_number(word[0]))
 				val = (u32) atoi(word); 
+			else
+				val = ht_get(symb_table, word);
 			
 			write_to_buffer_u32(val);
 			break;
@@ -503,7 +514,7 @@ static void *convertFile(void *arg){
 	while(get_word(word)){
 		int op_code;
 		int args = parse_op(word, &op_code);
-		if (op_code == LABEL) continue;		
+		if (op_code == IGNORE) continue;		
 
 		pc++;
 		write_to_buffer(op_code);

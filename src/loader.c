@@ -129,7 +129,7 @@ void load(Vm vm, FILE *file){
 			break;
 
 			// OTHERS
-			case LABEL:
+			case IGNORE:
 				break;
 			case OP_STR:
 				{

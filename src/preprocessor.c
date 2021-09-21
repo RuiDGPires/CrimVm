@@ -152,56 +152,67 @@ static int get_word(char *word_buffer){
 	return p;
 }
 
+static u32 hex_to_u32(char hex[]) {
+    u32 val = 0;
+    while (*hex) {
+        // get current character then increment
+        u8 byte = *hex++; 
+        // transform hex character to the 4bit equivalent number, using the ascii table indexes
+        if (byte >= '0' && byte <= '9') byte = byte - '0';
+					else if (byte >= 'a' && byte <='f') byte = byte - 'a' + 10;
+        else if (byte >= 'A' && byte <='F') byte = byte - 'A' + 10;    
+        // shift 4 to make space for new digit, and add the 4 bits of the new digit 
+        val = (val << 4) | (byte & 0xF);
+    }
+    return val;
+}
+
+static u32 parse_val(char word[]){
+	u32 val;
+	if (word[0] == '\''){
+		ASSERT(word[2] == '\'', "Char literals must be contained inside \' \'");
+		val = word[1]; 
+	}else if (word[0] == '0' && word[1] == 'x')
+		val = hex_to_u32(&word[2]);
+	else
+		val = (u32) atoi(word); 
+	return val;
+}
+
 static void parse_word(char word[], u32 *pc){
 	if (strcmp(word, "MVI") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "MOV") == 0){
+	}else if (strcmp(word, "MOV") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "ADD") == 0){
+	}else if (strcmp(word, "ADD") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "DMP") == 0){
+	}else if (strcmp(word, "DMP") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "STORE") == 0){
+	}else if (strcmp(word, "STORE") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "LOAD") == 0){
+	}else if (strcmp(word, "LOAD") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "PSH") == 0){
+	}else if (strcmp(word, "PSH") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "POP") == 0){
+	}else if (strcmp(word, "POP") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "SUB") == 0){
+	}else if (strcmp(word, "SUB") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "CMP") == 0){
+	}else if (strcmp(word, "CMP") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "BR") == 0){
+	}else if (strcmp(word, "BR") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "JMP") == 0){
+	}else if (strcmp(word, "JMP") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "RET") == 0){
+	}else if (strcmp(word, "RET") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "AND") == 0){
+	}else if (strcmp(word, "AND") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "OR") == 0){
+	}else if (strcmp(word, "OR") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "XOR") == 0){
+	}else if (strcmp(word, "XOR") == 0){
 		(*pc)++;
-	}
-	else if (strcmp(word, "NOT") == 0){
+	}else if (strcmp(word, "NOT") == 0){
 		(*pc)++;
 	}else if (strcmp(word, "SHR") == 0){
 		(*pc)++;
@@ -223,6 +234,11 @@ static void parse_word(char word[], u32 *pc){
 		(*pc)++;
 	}else if (strcmp(word, "PRNT") == 0){
 		(*pc)++;
+	}else if (strcmp(word, "\%define") == 0){
+		get_word(word);
+		char tmp[MAX_WORD_SIZE];
+		get_word(tmp);
+		ht_add(&symb_table, word, parse_val(tmp));
 	}else if (strcmp(word, "_start:")  == 0){
 		ASSERT(start_is_defined == FALSE, "_start can only be defined once");
 		start = *pc;
