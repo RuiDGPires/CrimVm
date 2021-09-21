@@ -234,6 +234,8 @@ static void parse_word(char word[], u32 *pc){
 		(*pc)++;
 	}else if (strcmp(word, "PRNT") == 0){
 		(*pc)++;
+	}else if (strcmp(word, "SYS") == 0){
+		(*pc)++;
 	}else if (strcmp(word, "\%define") == 0){
 		get_word(word);
 		char tmp[MAX_WORD_SIZE];

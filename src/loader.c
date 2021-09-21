@@ -126,6 +126,7 @@ void load(Vm vm, FILE *file){
 			case TRP_OUT:
 			case TRP_PRNT:
 			case TRP_DUMP:
+			case TRP_SYS:
 			break;
 
 			// OTHERS

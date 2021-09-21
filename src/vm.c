@@ -201,6 +201,10 @@ void run(Vm vm){
 				vm->pc++;
 				break;
 
+			// Sys calls are usefull to add functionallity to the core of the VM quickly
+			case TRP_SYS:
+				vm_syscall(vm_pop(vm), vm);
+				vm->pc++;
 			default:
 				THROW_ERROR("Unkown Operation \'%d\'", op.code);
 
