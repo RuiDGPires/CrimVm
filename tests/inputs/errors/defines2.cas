@@ -1,0 +1,7 @@
+;@[Err]
+
+foo:
+MVI R1 10
+PSH R1
+foo:
+DMP
