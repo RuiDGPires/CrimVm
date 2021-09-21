@@ -48,6 +48,7 @@ The result of the operation (except CMP) is always stored in the first register.
 | LOAD | u8 REG1, m[REG2] [[Reg or Val]] | Loads the value in the location REG2 (with or without an offset) onto REG1 |
 | PSH | u8 REG | Pushes to the stack the value in REG |
 | POP | u8 REG | Pops from the stack to REG |
+| STR | u8 REG, "STRING" | Stores the STRING in the memory subsequent to the address pointed by REG (including) |
 
 ### Flow control
 

@@ -1,6 +1,6 @@
 # CrimVm
 
-Specs of the VM can be found [here](Specs.md).
+Specs of the VM can be found [here](docs/specs.md).
 
 ## Example
 
