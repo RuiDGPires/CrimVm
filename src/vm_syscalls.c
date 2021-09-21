@@ -1,9 +1,12 @@
 #include "vm.h"
+#include "util.h"
+#include <unistd.h>
+#include <fcntl.h>
 
-enum sc_code {SYS_FOPEN = 0, SYS_FCLOSE};
+enum sc_code {SYS_OPEN = 0, SYS_CLOSE, SYS_WRITE, SYS_READ};
 enum fopen_mode {F_READ = 1, F_WRITE};
 
-static void vm_fopen(Vm vm){
+static void vm_open(Vm vm){
 	u32 address = vm_pop(vm);
 
 	char fname[MAX_WORD_SIZE];
@@ -13,35 +16,56 @@ static void vm_fopen(Vm vm){
 		fname[p++] = vm->mem[address++];	
 	}while(fname - 1);
 
-	char flag[1];
-	switch(vm->mem[address++]){
-		case F_READ:
-			flag[0] = 'r';
-			break;
-		case F_WRITE:
-			flag[0] = 'w';
-			break;
-	}
-	u64 fp = (u64) fopen(fname, flag);
+	u32 fd = open(fname, 0);
 
-	vm_push(fp >> 32, vm);
-	vm_push(fp & 0xFFFFFFFF, vm);
+	vm_push(fd, vm);
 }
 
-static void vm_fclose(Vm vm){
-	u64 fp = vm_pop(vm);
-	fp |= (u64) vm_pop(vm) << 32;
+static void vm_close(Vm vm){
+	close(vm_pop(vm));
+}
 
-	fclose((FILE *) fp);
+static void vm_write(Vm vm){
+	u32 size = vm_pop(vm);
+	u32 address = vm_pop(vm);
+	u32 fd = vm_pop(vm);
+
+	char tmp[size];
+
+	for (u32 i = 0; i < size; i++)
+		tmp[i] = (char) vm->mem[address++];
+
+	vm_push((u32) write(fd, tmp, size), vm);
+}
+
+static void vm_read(Vm vm){
+	u32 size = vm_pop(vm);
+	u32 address = vm_pop(vm);
+	u32 fd = vm_pop(vm);
+
+	char tmp[size];
+
+	vm_push((u32) read(fd, tmp, size), vm);
+
+	for (u32 i = 0; i < size; i++)
+		vm->mem[address++] = (u32) tmp[i];
 }
 
 void vm_syscall(u32 id, Vm vm){
 	switch (id){
-		case SYS_FOPEN:
-			vm_fopen(vm);
+		case SYS_OPEN:
+			vm_open(vm);
 			break;
-		case SYS_FCLOSE:
-			vm_fclose(vm);
+		case SYS_CLOSE:
+			vm_close(vm);
 			break;
+		case SYS_WRITE:
+			vm_write(vm);
+			break;
+		case SYS_READ:
+			vm_read(vm);
+			break;
+		default:
+			THROW_ERROR("Unkown system call");
 	}
 }

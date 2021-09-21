@@ -205,6 +205,7 @@ void run(Vm vm){
 			case TRP_SYS:
 				vm_syscall(vm_pop(vm), vm);
 				vm->pc++;
+				break;
 			default:
 				THROW_ERROR("Unkown Operation \'%d\'", op.code);
 
