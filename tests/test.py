@@ -70,7 +70,7 @@ for directory in DIRS:
 
     section_name = ""
     with open(f"{dir_path}/inputs/{directory}/.section") as f:
-        section_name = f.read().translate(t) 
+        section_name = f.readlines()[0].translate(t) 
 
     if section_name[-1] == " ":
         section_name = section_name[:-1]
