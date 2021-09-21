@@ -1,0 +1,15 @@
+MVI R1 1 ; stdout
+
+MOV R2 R0
+STR m[R2] "Hello, world!\n"
+MVI R3 14
+
+PSH R1
+PSH R2
+PSH R3
+
+MVI R1 2 ; SYS_WRITE
+PSH R1
+SYS 
+POP R0
+END
