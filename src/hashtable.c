@@ -41,7 +41,7 @@ void llDestroy(ll_Link head){
   free(head);
 }
 
-void llAppend(ll_Link *head, char name[], u32 val){
+bool llPut(ll_Link *head, char name[], u32 val){
   if (*head == NULL){
     *head = (ll_Link) malloc(sizeof(struct ll_node));
 		ASSERT(head != NULL, "Error allocating memory");
@@ -49,29 +49,25 @@ void llAppend(ll_Link *head, char name[], u32 val){
 		(*head)->val = val;
     (*head)->next = NULL;
     (*head)->size = 1;
+		return 1;
   }else{
-    (*head)->size += 1;
-    llAppend(&((*head)->next), name, val);
-  }
-}
-
-void llPush(ll_Link *head, const char name[], u32 val){
-  if (*head == NULL){
-    *head = (ll_Link) malloc(sizeof(struct ll_node));
-		ASSERT(head != NULL, "Error allocating memory");
-		strcpy((*head)->name, name);
-		(*head)->val = val;
-		(*head)->next = NULL;
-		(*head)->size = 1;
-  }else{
-		ll_Link new = (ll_Link) malloc(sizeof(struct ll_node));
-		ASSERT(new != NULL, "Error allocating memory");
-		strcpy(new->name, name);
-		new->val = val;
-		new->next = *head;
-    new->size = (*head)->size + 1;
-		(*head) = new;
-  }
+		int res = strcmp(name, (*head)->name); 
+		if (res == 0)
+			return 0;
+		else if (res > 0){
+			(*head)->size += 1;
+			return llPut(&((*head)->next), name, val);		
+		}else{
+			ll_Link new = (ll_Link) malloc(sizeof(struct ll_node));
+			ASSERT(new != NULL, "Error allocating memory");
+			strcpy(new->name, name);
+			new->val = val;
+			new->next = *head;
+			new->size = (*head)->size + 1;
+			(*head) = new;
+			return 1;
+		}
+	}
 }
 
 u32 llGet(ll_Link head, const char name[]){
@@ -130,8 +126,8 @@ void ht_destroy(Hashtable table){
 		llDestroy(table.table[i]);
 }
 
-void ht_add(Hashtable *table, char name[], u32 val){
-	llPush(&table->table[hash(name)], name, val);
+bool ht_add(Hashtable *table, char name[], u32 val){
+	return llPut(&table->table[hash(name)], name, val);
 }
 
 u32 ht_get(Hashtable table, char name[]){

@@ -30,7 +30,7 @@ typedef struct{
 
 Hashtable ht_create();
 void ht_destroy(Hashtable);
-void ht_add(Hashtable *, char *, u32);
+bool ht_add(Hashtable *, char *, u32);
 u32 ht_get(Hashtable, char *);
 
 #endif

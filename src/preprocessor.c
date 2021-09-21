@@ -238,7 +238,7 @@ static void parse_word(char word[], u32 *pc){
 		get_word(word);
 		char tmp[MAX_WORD_SIZE];
 		get_word(tmp);
-		ht_add(&symb_table, word, parse_val(tmp));
+		ASSERT(ht_add(&symb_table, word, parse_val(tmp)), "Name \"%s\" is already defined", word);
 	}else if (strcmp(word, "_start:")  == 0){
 		ASSERT(start_is_defined == FALSE, "_start can only be defined once");
 		start = *pc;
@@ -248,7 +248,7 @@ static void parse_word(char word[], u32 *pc){
 		u32 last_char_index = strlen(word) - 1;
 		if (word[last_char_index] == ':'){
 			word[last_char_index] = '\0';
-			ht_add(&symb_table, word, *pc);
+			ASSERT(ht_add(&symb_table, word, *pc), "Name \"%s\" is already defined", word);
 		}
 	}
 }
@@ -260,7 +260,7 @@ static void *convertFile(void *arg){
 	while(get_word(word))
 		 parse_word(word, &pc);
 
-	ht_add(&symb_table, "_start", start);
+	ASSERT(ht_add(&symb_table, "_start", start), "_start  is already defined");
 	pthread_exit(NULL);
 	return NULL;
 }
