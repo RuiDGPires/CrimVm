@@ -70,9 +70,9 @@ The result of the operation (except CMP) is always stored in the first register.
 | OUT | Pops a value and prints it as an ASCII char |
 | PRNT | Pops a memory address and prints every following space in memory until it reaches '\0' |
 | DMP | Pops a value from the stack and prints it as an integer|
+| SYS <id> | Executes the system call identified by <id>. Documentation for sys calls is bellow |
 
 ---
-
 
 ## Registers
 
@@ -97,6 +97,25 @@ The result of the operation (except CMP) is always stored in the first register.
 | N | Value is negative |
 | O | Value overflowed |
 
+---
+
+## System calls
+
+Args and return are done via stack and are presented by the order in which they are pushed
+
+| ID | NAME |  Args | Return | Description |
+| :---: | :---: | :---: | :---: | :--- |
+| 0 | OPEN | Address, Mode | Fd | Opens the file with name starting at **Address** with **Mode**. Returns the file descriptor |
+| 1 | CLOSE | Fd | Closes the file descriptor **fd**| 
+| 2 | WRITE | Fd, Address, N | n | Writes **N** bytes (memory spaces) starting at **Address** to **Fd**, returns the number of bytes written |
+| 3 | READ | Fd, Address, N | n | Reads **N** bytes (memory spaces) from **Fd** to the **N** locations starting at **Address**, returns the number of bytes read |
+| 4 | REMOVE | Address | | Removes the file with name starting at **Address** |
+
+### File opening modes
+
+- 0: Read
+- 1: Write
+ 
 ---
 
 ## Other
