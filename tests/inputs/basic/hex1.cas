@@ -1,3 +1,0 @@
-MVI R1 0x01
-PSH R1
-DMP

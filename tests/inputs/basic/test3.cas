@@ -1,9 +1,0 @@
-MVI R1 10
-MOV R2 R1
-MVI R1 5
-
-ADD R1 R2
-
-PSH R1
-
-DMP

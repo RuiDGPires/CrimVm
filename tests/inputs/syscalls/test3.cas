@@ -1,5 +1,0 @@
-MVI R1 0
-
-STR m[R1] "echo Hello, world!"
-PSH R1
-SYS 5

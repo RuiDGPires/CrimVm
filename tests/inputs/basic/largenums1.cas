@@ -1,3 +1,0 @@
-MVI R1 9000
-PSH R1
-DMP

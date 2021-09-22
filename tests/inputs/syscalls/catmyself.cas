@@ -1,5 +1,0 @@
-MVI R1 0
-
-STR m[R1] "cat tests/inputs/syscalls/catmyself.cas"
-PSH R1
-SYS 5
