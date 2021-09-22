@@ -30,7 +30,9 @@ typedef uint64_t u64;
 typedef uint8_t u8;
 
 // Smallest size possible for bool
+#ifndef __cplusplus
 typedef uint8_t bool;
+#endif
 
 #define TRUE 1
 #define FALSE 0
