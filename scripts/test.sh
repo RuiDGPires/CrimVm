@@ -1,8 +1,8 @@
 #!/bin/sh
 
-FILE=./crimvm
+FILE=crimvm
 if [ ! -f "$FILE" ]; then
-	make clean debug 
+	make clean release
 fi
 
 tests/test.py $@
