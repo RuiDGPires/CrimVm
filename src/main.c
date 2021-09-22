@@ -20,7 +20,7 @@
 #include "vm.h"
 #include "util.h"
 
-void print_help(){
+static void print_help(){
 	printf("CrimVm v0.1.0\n");
 
 	printf("\nSupported commands:\n\n");
@@ -35,7 +35,7 @@ void print_help(){
 
 
 
-void run_binary(char file_path[]){
+static void run_binary(char file_path[]){
 	Vm_ vm;
 	vm_init(&vm);
 	vm_load(&vm, file_path);
@@ -48,7 +48,7 @@ void run_binary(char file_path[]){
 
 
 // Check if file extension is .cas
-int check_file_extension(char filename[], char extension[]){
+static int check_file_extension(char filename[], char extension[]){
 	int length = strlen(filename);
 	int ext_len = strlen(extension);
 	
@@ -56,6 +56,8 @@ int check_file_extension(char filename[], char extension[]){
 	return strcmp(last_chars, extension) == 0;
 }
 
+#ifndef PROGRAM_ENTRY_
+#define PROGRAM_ENTRY_
 int main(int argc, char *argv[]){
 	bool flag_outfile = FALSE, flag_assemble = FALSE, flag_run = FALSE, flag_assemble_and_run = FALSE;
 	char *out_name = NULL;
@@ -143,3 +145,4 @@ int main(int argc, char *argv[]){
 	}else
 		THROW_ERROR("Invalid usage, please use -h to see supported arguments");
 }
+#endif
