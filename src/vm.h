@@ -31,6 +31,7 @@
 enum op_code {OP_MVI = 0, OP_MOV, OP_ADD,  OP_STORE, OP_LOAD, OP_PUSH, OP_POP, OP_SUB, OP_CMP, OP_BR, OP_JMP, OP_RET, OP_AND, OP_OR, OP_XOR, OP_NOT, OP_SHR, OP_SHL,  OP_END, OP_INC, OP_DEC, OP_MUL, OP_DIV, OP_STR, IGNORE};
 enum trap_code {TRP_GETC = 0x30, TRP_OUT, TRP_PRNT, TRP_DUMP, TRP_SYS};
 
+// Test
 enum flags {FLG_ZERO = 1	<< 0,
 						FLG_POS = 1		<< 1,
 						FLG_NEG = 1		<< 2,
