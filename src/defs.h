@@ -35,7 +35,7 @@ typedef uint8_t bool;
 #define TRUE 1
 #define FALSE 0
 
-#define MAX_WORD_SIZE 32
+#define MAX_WORD_SIZE 64
 #define INVALID_ITEM 0xFFFFFFFF
 #define CRIMSEMBLY_TAG 0x4352494d // CRIM
 #endif
