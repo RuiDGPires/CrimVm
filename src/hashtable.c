@@ -58,13 +58,13 @@ bool llPut(ll_Link *head, char name[], u32 val){
 			(*head)->size += 1;
 			return llPut(&((*head)->next), name, val);		
 		}else{
-			ll_Link new = (ll_Link) malloc(sizeof(struct ll_node));
-			ASSERT(new != NULL, "Error allocating memory");
-			strcpy(new->name, name);
-			new->val = val;
-			new->next = *head;
-			new->size = (*head)->size + 1;
-			(*head) = new;
+			ll_Link new_ = (ll_Link) malloc(sizeof(struct ll_node));
+			ASSERT(new_ != NULL, "Error allocating memory");
+			strcpy(new_->name, name);
+			new_->val = val;
+			new_->next = *head;
+			new_->size = (*head)->size + 1;
+			(*head) = new_;
 			return 1;
 		}
 	}
