@@ -110,6 +110,7 @@ Args and return are done via stack and are presented by the order in which they 
 | 2 | WRITE | Fd, Address, N | n | Writes **N** bytes (memory spaces) starting at **Address** to **Fd**, returns the number of bytes written |
 | 3 | READ | Fd, Address, N | n | Reads **N** bytes (memory spaces) from **Fd** to the **N** locations starting at **Address**, returns the number of bytes read |
 | 4 | REMOVE | Address | | Removes the file with name starting at **Address** |
+| 5 | SHELL| Address | Res | Calls the command with text starting at **Address** and returns the result |
 
 ### File opening modes
 

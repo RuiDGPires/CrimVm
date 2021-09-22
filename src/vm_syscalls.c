@@ -7,7 +7,8 @@ enum sc_code {SYS_OPEN = 0,
 							SYS_CLOSE = 1,
 							SYS_WRITE = 2,
 							SYS_READ = 3,
-						 	SYS_REMOVE = 4};
+						 	SYS_REMOVE = 4,
+							SYS_SHELL = 5};
 
 enum fopen_mode {F_READ = 0, F_WRITE};
 
@@ -94,6 +95,14 @@ static void vm_remove(Vm vm){
 	vm_push((u32) remove(fname), vm);
 }
 
+static void vm_shell_call(Vm vm){
+	u32 address = vm_pop(vm);
+	char text[MAX_WORD_SIZE*2];
+	get_string(text, address, vm);
+
+	vm_push(system(text), vm);
+}
+
 void vm_syscall(u32 id, Vm vm){
 	switch (id){
 		case SYS_OPEN:
@@ -111,7 +120,10 @@ void vm_syscall(u32 id, Vm vm){
 		case SYS_REMOVE:
 			vm_remove(vm);
 			break;
+		case SYS_SHELL:
+			vm_shell_call(vm);
+			break;
 		default:
-			THROW_ERROR("Unkown system call");
+			THROW_ERROR("Unkown system call %d", id);
 	}
 }
