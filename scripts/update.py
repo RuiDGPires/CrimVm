@@ -4,7 +4,7 @@ from glob import glob
 from subprocess import run
 
 files = glob("src/*")
-
+files.remove("src/main.c")
 
 run(["git", "checkout", "core"])
 run(["git", "checkout", "master", "--"] + files)
