@@ -39,7 +39,7 @@ u32 get_offset(u32 arg, Vm vm){
 	}
 }
 
-void run(Vm vm){
+int run(Vm vm){
 	while(vm->pc < vm->prog_length){
 		Operation op = vm->program[vm->pc];
 		u32 res;
@@ -172,8 +172,7 @@ void run(Vm vm){
 				}
 				break;
 			case OP_END:
-				return;
-
+				goto end_execution;	
 
 			// Trap routines
 			case TRP_GETC:
@@ -215,6 +214,14 @@ void run(Vm vm){
 				break;
 		}	
 	} 
+
+end_execution:
+	if (vm->regs[SP] == VM_MEM_SIZE)
+		return 0;
+	else if (vm->regs[SP] < VM_MEM_SIZE-1)
+		THROW_ERROR("STACK HAS UNPOPED DATA");
+	else 
+		return (vm->mem[vm->regs[SP]++]);
 }
 
 void vm_push(u32 val, Vm vm){
