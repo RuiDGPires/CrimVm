@@ -398,6 +398,8 @@ static u8 parse_register(char c){
 		return RE;
 	if (c == 'S')
 		return SP;
+	if (c == 'F')
+		return FP;
 
 	ASSERT(c >= '0' && c <= '9', "Unexpected Token: %c", c);
 	ASSERT(c - '0' < R_COUNT, "Invalid register: R%d", c - '0');
