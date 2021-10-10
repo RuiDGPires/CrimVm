@@ -35,15 +35,16 @@ static void print_help(){
 
 
 
-static void run_binary(char file_path[]){
+static int run_binary(char file_path[]){
 	Vm_ vm;
 	vm_init(&vm);
 	vm_load(&vm, file_path);
 
 	// Pass the control to the VM
-	vm.driver.run(&vm);
+	int res = vm.driver.run(&vm);
 
 	vm_destroy(&vm);
+	return res;
 }
 
 
@@ -71,8 +72,8 @@ int main(int argc, char *argv[]){
 			print_help();
 			return 0;
 		}
-		run_binary(argv[1]);
-		return 0;
+
+		return run_binary(argv[1]);
 	}
 
 	bool request_cas_file = FALSE, request_run_file = FALSE, request_out_file = FALSE;
@@ -135,13 +136,14 @@ int main(int argc, char *argv[]){
 	if (flag_assemble)
 		assemble(filename, out_name);
 	else if (flag_run)
-		run_binary(filename);
+		return run_binary(filename);
 	else if (flag_assemble_and_run){
 		char tmpfile[] = "/tmp/casXXXXXX";
 		if (mkstemp(tmpfile) < 0) THROW_ERROR("Error creating temporary file");
 		assemble(filename, tmpfile);
-		run_binary(tmpfile);
+		int res = run_binary(tmpfile);
 		remove(tmpfile);
+		return res;
 	}else
 		THROW_ERROR("Invalid usage, please use -h to see supported arguments");
 }
