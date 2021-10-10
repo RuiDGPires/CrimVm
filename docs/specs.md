@@ -81,9 +81,15 @@ The result of the operation (except CMP) is always stored in the first register.
 | R0 | A register that always equals to 0 | Yes |
 | R1 | General purpose register | No |
 | R2 | General purpose register | No |
-| R3 | Auxiliar register | Yes |
-| R4 | Auxiliar register | Yes |
-| SP | Stack pointer | Yes (Except for passed arguents) |
+| R3 | General purpose register | No |
+| R4 | General purpose register | No |
+| R5 | General purpose register | No |
+| R6 | General purpose register | No |
+| R7 | General purpose register | No |
+| R8 | Auxiliar register | Yes |
+| R9 | Auxiliar register | Yes |
+| RS | Stack pointer | Yes (Except for passed arguents) |
+| RF | Frame pointer | Yes | 
 | RE | Return program address | Yes |
 
 ---

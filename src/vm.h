@@ -67,8 +67,8 @@ typedef struct {
 	// Describe an API
 } Scheduler;
 
-// R0 is ALWAYS equal to 0. Other registers include 3 general purpose registers, a stack pointer and a return register.
-enum reg_type{R0 = 0, R1, R2, R3, R4, SP, FP, RE, R_COUNT};
+// R0 is ALWAYS equal to 0. SP is stack pointer (RS), FP is frame pointer (RF), RE is return PC.
+enum reg_type{R0 = 0, R1, R2, R3, R4, R5, R6, R7, R8, R9, SP, FP, RE, R_COUNT};
 typedef struct vm_s {
 	Loader loader;
 	Scheduler scheduler;
