@@ -125,6 +125,10 @@ Args and return are done via stack and are presented by the order in which they 
  
 ---
 
+## Exit codes
+
+The exit code of the program will be equal to the last value on the stack. If the stack is empty, the exit code 0 is returned. If the stack has more than one item on it, an error is thrown.
+
 ## Other
 
 Labels can be assigned by writing a word (no spacing) and a ':' at the end, like so:
