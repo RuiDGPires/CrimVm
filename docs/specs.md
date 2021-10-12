@@ -90,7 +90,7 @@ The result of the operation (except CMP) is always stored in the first register.
 | R9 | Auxiliar register | Yes |
 | RS | Stack pointer | Yes (Except for passed arguents) |
 | RF | Frame pointer | Yes | 
-| RE | Return program address | Yes |
+| RE | Return program address | No |
 
 ---
 
