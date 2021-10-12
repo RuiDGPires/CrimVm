@@ -35,7 +35,8 @@ u32 get_offset(u32 arg, Vm vm){
 	if (arg & 0x80000000){
 		return vm->regs[arg & 0xFF];
 	}else{
-		return arg;
+		if (arg & 0x40000000) return arg | 0x80000000;
+		else return arg;
 	}
 }
 
@@ -63,11 +64,11 @@ int run(Vm vm){
 				vm->pc++;
 				goto store_res;
 			case OP_STORE:
-				vm->mem[vm->regs[op.args[0]] + get_offset(op.u32_aux, vm)] = vm->regs[op.args[1]];
+				vm->mem[vm->regs[op.args[0]] + (i32) get_offset(op.u32_aux, vm)] = vm->regs[op.args[1]];
 				vm->pc++;
 				break;
 			case OP_LOAD:
-				res = vm->mem[vm->regs[op.args[1]] + get_offset(op.u32_aux, vm)];
+				res = vm->mem[vm->regs[op.args[1]] + (i32) get_offset(op.u32_aux, vm)];
 				vm->pc++;
 				goto store_res;
 			case OP_PUSH:
