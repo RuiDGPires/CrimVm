@@ -450,6 +450,7 @@ static void expect_type(u8 type){
 					ASSERT(word[i] == ']', "Word exceeds max size");
 					word[i] = '\0';
 					offset = (u32) atol(&word[6]);
+					offset &= 0x7FFFFFFF;
 					write_to_buffer_u32(offset); // Write the offset
 				}
 			}else{
