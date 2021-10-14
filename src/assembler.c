@@ -127,6 +127,7 @@ static char parse_special_char(char c){
 }
 
 static bool ends_in_dot = FALSE;
+u32 line = 1;
 static int get_word(char *word_buffer){
 	u32 p = 0;
 	bool is_comment = FALSE;
@@ -158,6 +159,8 @@ static int get_word(char *word_buffer){
 		signalCondition(&reading_can_produce);
 		mutexUnlock(&reading_mutex);
 
+		if (c == '\n')
+			line++;
 
 		if (!is_comment && !read_slash && c == '\\'){
 			read_slash = TRUE; 
@@ -524,6 +527,10 @@ static void *convertFile(void *arg){
 		int op_code;
 		int args = parse_op(word, &op_code);
 		if (op_code == IGNORE) continue;		
+
+#ifdef DEBUG_INFO
+		mapping[pc] = line;
+#endif
 
 		pc++;
 		write_to_buffer(op_code);
