@@ -40,190 +40,204 @@ u32 get_offset(u32 arg, Vm vm){
 	}
 }
 
-int run(Vm vm){
-	while(vm->pc < vm->prog_length){
-		Operation op = vm->program[vm->pc];
-		u32 res;
-		switch(op.code){
-			case OP_MVI:
-				res = op.args[1];
-				vm->pc++;
-				goto store_res;
-			case OP_MOV:
-				res =  vm->regs[op.args[1]];
-				vm->pc++;
-				goto store_res;
-			case OP_ADD:
-				res = vm->regs[op.args[0]] + vm->regs[op.args[1]];
-				vm->flags = 0;
 
-				// CHECK OVERFLOWS
-				if ((check_msbit(vm->regs[op.args[0]]) || check_msbit(vm->regs[op.args[1]])) && !check_msbit(res))
-					vm->flags |= FLG_OV;
+bool end = FALSE;
+int return_val;
+void step(Vm vm){
+	if (vm->pc >= vm->prog_length){
+		end = TRUE;
+		return;
+	}
 
-				vm->pc++;
-				goto store_res;
-			case OP_STORE:
-				vm->mem[vm->regs[op.args[0]] + (i32) get_offset(op.u32_aux, vm)] = vm->regs[op.args[1]];
-				vm->pc++;
-				break;
-			case OP_LOAD:
-				res = vm->mem[vm->regs[op.args[1]] + (i32) get_offset(op.u32_aux, vm)];
-				vm->pc++;
-				goto store_res;
-			case OP_PUSH:
-				vm_push(vm->regs[op.args[0]], vm);
-				vm->pc++;
-				break;
-			case OP_POP:
-				res = vm_pop(vm);
-				vm->pc++;
-				goto store_res;
-			case OP_SUB:
-				res = vm->regs[op.args[0]] - vm->regs[op.args[1]];
-				vm->flags = 0;
+	Operation op = vm->program[vm->pc];
+	u32 res;
+	switch(op.code){
+		case OP_MVI:
+			res = op.args[1];
+			vm->pc++;
+			goto store_res;
+		case OP_MOV:
+			res =  vm->regs[op.args[1]];
+			vm->pc++;
+			goto store_res;
+		case OP_ADD:
+			res = vm->regs[op.args[0]] + vm->regs[op.args[1]];
+			vm->flags = 0;
 
-				if (check_msbit(res))
-					vm->flags |= FLG_NEG;
-				else if (res == 0)
-					vm->flags |= FLG_ZERO;
-				else
-					vm->flags |= FLG_POS;
-				
-				vm->pc++;
-				goto store_res;
-			case OP_CMP:
-				res = vm->regs[op.args[0]] - vm->regs[op.args[1]];
-				vm->flags = 0;
+			// CHECK OVERFLOWS
+			if ((check_msbit(vm->regs[op.args[0]]) || check_msbit(vm->regs[op.args[1]])) && !check_msbit(res))
+				vm->flags |= FLG_OV;
 
-				if (check_msbit(res))
-					vm->flags |= FLG_NEG;
-				else if (res == 0)
-					vm->flags |= FLG_ZERO;
-				else
-					vm->flags |= FLG_POS;
+			vm->pc++;
+			goto store_res;
+		case OP_STORE:
+			vm->mem[vm->regs[op.args[0]] + (i32) get_offset(op.u32_aux, vm)] = vm->regs[op.args[1]];
+			vm->pc++;
+			break;
+		case OP_LOAD:
+			res = vm->mem[vm->regs[op.args[1]] + (i32) get_offset(op.u32_aux, vm)];
+			vm->pc++;
+			goto store_res;
+		case OP_PUSH:
+			vm_push(vm->regs[op.args[0]], vm);
+			vm->pc++;
+			break;
+		case OP_POP:
+			res = vm_pop(vm);
+			vm->pc++;
+			goto store_res;
+		case OP_SUB:
+			res = vm->regs[op.args[0]] - vm->regs[op.args[1]];
+			vm->flags = 0;
 
-				vm->pc++;
-				break;
-			case OP_AND:
-				res = vm->regs[op.args[0]] & vm->regs[op.args[1]];
-				vm->pc++;
-				goto store_res;
-			case OP_OR:
-				res = vm->regs[op.args[0]] | vm->regs[op.args[1]];
-				vm->pc++;
-				goto store_res;
-			case OP_XOR:
-				res = vm->regs[op.args[0]] ^ vm->regs[op.args[1]];
-				vm->pc++;
-				goto store_res;
-			case OP_NOT:
-				res = ~(vm->regs[op.args[0]]);
-				vm->pc++;
-				goto store_res;
-			case OP_BR:
-				if (check_flags(vm->flags, op.args[0]))
-					vm->pc += op.args[1];
-				else
-					vm->pc++;
-				break;
-			case OP_JMP:
-				if (check_flags(vm->flags, op.args[0])){
-					vm->regs[RE] = vm->pc + 1;
-					vm->pc = op.args[1];
-				}
-				else
-					vm->pc++;
+			if (check_msbit(res))
+				vm->flags |= FLG_NEG;
+			else if (res == 0)
+				vm->flags |= FLG_ZERO;
+			else
+				vm->flags |= FLG_POS;
+			
+			vm->pc++;
+			goto store_res;
+		case OP_CMP:
+			res = vm->regs[op.args[0]] - vm->regs[op.args[1]];
+			vm->flags = 0;
 
-				break;
-			case OP_RET:
-				vm->pc = vm->regs[RE];
-				break;
-			case OP_SHL:
-				res = vm->regs[op.args[0]] << 1;
-				vm->pc++;
-				goto store_res;
-			case OP_SHR:
-				res = vm->regs[op.args[0]] >> 1;
-				vm->pc++;
-				goto store_res;
-			case OP_INC:
-				res = vm->regs[op.args[0]] + 1;
-				vm->pc++;
-				goto store_res;
-			case OP_DEC:
-				res = vm->regs[op.args[0]] - 1;
-				vm->pc++;
-				goto store_res;
-			case OP_MUL:
-				res = vm->regs[op.args[0]] * vm->regs[op.args[1]];
-				vm->pc++;
-				goto store_res;
-			case OP_DIV:
-				res = (u32) vm->regs[op.args[0]] / vm->regs[op.args[1]];
-				vm->pc++;
-				goto store_res;
-			case OP_STR:
-				{
-					u8 i = 0;
-					for (; op.u8p_aux[i] != '\0'; i++)
-						vm->mem[vm->regs[op.args[0]] + get_offset(op.u32_aux, vm) + i] = op.u8p_aux[i];
-					vm->mem[vm->regs[op.args[0]] + get_offset(op.u32_aux, vm) + i] = '\0';
-					vm->pc++;
-				}
-				break;
-			case OP_END:
-				goto end_execution;	
+			if (check_msbit(res))
+				vm->flags |= FLG_NEG;
+			else if (res == 0)
+				vm->flags |= FLG_ZERO;
+			else
+				vm->flags |= FLG_POS;
 
-			// Trap routines
-			case TRP_GETC:
-				vm_push((u32) getchar(), vm);	
+			vm->pc++;
+			break;
+		case OP_AND:
+			res = vm->regs[op.args[0]] & vm->regs[op.args[1]];
+			vm->pc++;
+			goto store_res;
+		case OP_OR:
+			res = vm->regs[op.args[0]] | vm->regs[op.args[1]];
+			vm->pc++;
+			goto store_res;
+		case OP_XOR:
+			res = vm->regs[op.args[0]] ^ vm->regs[op.args[1]];
+			vm->pc++;
+			goto store_res;
+		case OP_NOT:
+			res = ~(vm->regs[op.args[0]]);
+			vm->pc++;
+			goto store_res;
+		case OP_BR:
+			if (check_flags(vm->flags, op.args[0]))
+				vm->pc += op.args[1];
+			else
 				vm->pc++;
-				break;	
-			// Pops a pointer from the stack and prints until it reaches a \0
-			case TRP_PRNT:
-				for(u32 p = vm_pop(vm); vm->mem[p]; p++) {
-					res = vm->mem[p]; 
-					fputc((char) res, stdout);
-				}
-				fflush(stdout);	
+			break;
+		case OP_JMP:
+			if (check_flags(vm->flags, op.args[0])){
+				vm->regs[RE] = vm->pc + 1;
+				vm->pc = op.args[1];
+			}
+			else
 				vm->pc++;
-				break;
-			case TRP_OUT:
-				res = vm_pop(vm);
+
+			break;
+		case OP_RET:
+			vm->pc = vm->regs[RE];
+			break;
+		case OP_SHL:
+			res = vm->regs[op.args[0]] << 1;
+			vm->pc++;
+			goto store_res;
+		case OP_SHR:
+			res = vm->regs[op.args[0]] >> 1;
+			vm->pc++;
+			goto store_res;
+		case OP_INC:
+			res = vm->regs[op.args[0]] + 1;
+			vm->pc++;
+			goto store_res;
+		case OP_DEC:
+			res = vm->regs[op.args[0]] - 1;
+			vm->pc++;
+			goto store_res;
+		case OP_MUL:
+			res = vm->regs[op.args[0]] * vm->regs[op.args[1]];
+			vm->pc++;
+			goto store_res;
+		case OP_DIV:
+			res = (u32) vm->regs[op.args[0]] / vm->regs[op.args[1]];
+			vm->pc++;
+			goto store_res;
+		case OP_STR:
+			{
+				u8 i = 0;
+				for (; op.u8p_aux[i] != '\0'; i++)
+					vm->mem[vm->regs[op.args[0]] + get_offset(op.u32_aux, vm) + i] = op.u8p_aux[i];
+				vm->mem[vm->regs[op.args[0]] + get_offset(op.u32_aux, vm) + i] = '\0';
+				vm->pc++;
+			}
+			break;
+		case OP_END:
+			end = TRUE;
+			break;
+
+		// Trap routines
+		case TRP_GETC:
+			vm_push((u32) getchar(), vm);	
+			vm->pc++;
+			break;	
+		// Pops a pointer from the stack and prints until it reaches a \0
+		case TRP_PRNT:
+			for(u32 p = vm_pop(vm); vm->mem[p]; p++) {
+				res = vm->mem[p]; 
 				fputc((char) res, stdout);
-				fflush(stdout);
-				vm->pc++;
-				break;
-			case TRP_DUMP:
-				printf("%d\n", vm_pop(vm));
-				fflush(stdout);
-				vm->pc++;
-				break;
+			}
+			fflush(stdout);	
+			vm->pc++;
+			break;
+		case TRP_OUT:
+			res = vm_pop(vm);
+			fputc((char) res, stdout);
+			fflush(stdout);
+			vm->pc++;
+			break;
+		case TRP_DUMP:
+			printf("%d\n", vm_pop(vm));
+			fflush(stdout);
+			vm->pc++;
+			break;
 
-			// Sys calls are usefull to add functionallity to the core of the VM quickly
-			case TRP_SYS:
-				vm_syscall(op.args[0], vm);
-				vm->pc++;
-				break;
-			default:
-				THROW_ERROR("Unkown Operation \'%d\'", op.code);
+		// Sys calls are usefull to add functionallity to the core of the VM quickly
+		case TRP_SYS:
+			vm_syscall(op.args[0], vm);
+			vm->pc++;
+			break;
+		default:
+			THROW_ERROR("Unkown Operation \'%d\'", op.code);
 
-			store_res:
-				if (op.args[0] != R0)
-					vm->regs[op.args[0]] = res;	
-				break;
-		}	
-	} 
+		store_res:
+			if (op.args[0] != R0)
+				vm->regs[op.args[0]] = res;	
+			break;
+	}
+}
 
-end_execution:
+
+int run(Vm vm){
+	do {
+		step(vm);
+	}while(!end);
+
 	if (vm->regs[SP] == VM_MEM_SIZE)
 		return 0;
 	else if (vm->regs[SP] < VM_MEM_SIZE-1)
 		THROW_ERROR("STACK HAS UNPOPED DATA");
 	else 
 		return (vm->mem[vm->regs[SP]++]);
-}
+} 
+
 
 void vm_push(u32 val, Vm vm){
 	vm->mem[--vm->regs[SP]] = val;
