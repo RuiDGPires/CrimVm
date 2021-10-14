@@ -50,6 +50,7 @@ typedef struct driver_s {
 	f_drv_run run;
 	f_drv_step step;
 	Vm vm;
+	bool is_at_end;
 } Driver;
 
 typedef void (*f_ldr_load)(Vm, FILE *);

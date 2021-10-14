@@ -41,11 +41,10 @@ u32 get_offset(u32 arg, Vm vm){
 }
 
 
-bool end = FALSE;
 int return_val;
 void step(Vm vm){
 	if (vm->pc >= vm->prog_length){
-		end = TRUE;
+		vm->driver.is_at_end = TRUE;
 		return;
 	}
 
@@ -180,7 +179,7 @@ void step(Vm vm){
 			}
 			break;
 		case OP_END:
-			end = TRUE;
+			vm->driver.is_at_end = TRUE;
 			break;
 
 		// Trap routines
@@ -228,7 +227,7 @@ void step(Vm vm){
 int run(Vm vm){
 	do {
 		step(vm);
-	}while(!end);
+	}while(!vm->driver.is_at_end);
 
 	if (vm->regs[SP] == VM_MEM_SIZE)
 		return 0;
@@ -258,7 +257,7 @@ void vm_init(Vm vm){
 	vm->regs[SP] = VM_MEM_SIZE;
 	vm->regs[R0] = 0;
 	vm->flags = 0;
-	vm->driver = (Driver){.run = run, .step = step, .vm = vm};
+	vm->driver = (Driver){.run = run, .step = step, .vm = vm, .is_at_end=FALSE};
 }
 
 void vm_destroy(Vm vm){
