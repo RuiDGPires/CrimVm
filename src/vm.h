@@ -44,9 +44,11 @@ enum flags {FLG_ZERO = 1	<< 0,
 typedef struct vm_s *Vm;
 
 typedef int (*f_drv_run)(Vm); 
+typedef void (*f_drv_step)(Vm); 
 
 typedef struct driver_s {
 	f_drv_run run;
+	f_drv_step step;
 	Vm vm;
 } Driver;
 

@@ -258,7 +258,7 @@ void vm_init(Vm vm){
 	vm->regs[SP] = VM_MEM_SIZE;
 	vm->regs[R0] = 0;
 	vm->flags = 0;
-	vm->driver = (Driver){.run = run, .vm = vm};
+	vm->driver = (Driver){.run = run, .step = step, .vm = vm};
 }
 
 void vm_destroy(Vm vm){
