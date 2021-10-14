@@ -28,10 +28,6 @@
 
 #define OP_MAX_ARGS 2 
 
-#ifdef DEBUG_INFO
-#define MAX_MAPS 1000
-u32 mapping[MAX_MAPS];
-#endif
 
 enum op_code {OP_MVI = 0, OP_MOV, OP_ADD,  OP_STORE, OP_LOAD, OP_PUSH, OP_POP, OP_SUB, OP_CMP, OP_BR, OP_JMP, OP_RET, OP_AND, OP_OR, OP_XOR, OP_NOT, OP_SHR, OP_SHL,  OP_END, OP_INC, OP_DEC, OP_MUL, OP_DIV, OP_STR, IGNORE};
 enum trap_code {TRP_GETC = 0x30, TRP_OUT, TRP_PRNT, TRP_DUMP, TRP_SYS};
@@ -92,6 +88,7 @@ typedef struct vm_s {
 	Driver driver;
 
 	Vm parent;
+
 } Vm_;
 
 // Returns error code
@@ -104,5 +101,5 @@ u32 NNULL vm_pop(Vm);
 
 void NNULL loader_init(Loader *, Vm);
 void assemble(char *, char *);
-
+u32 *get_mapping();
 #endif

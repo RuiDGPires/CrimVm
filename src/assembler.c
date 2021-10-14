@@ -520,6 +520,9 @@ static void expect_type(u8 type){
 	}
 }
 
+#define MAX_MAPS 4000
+u32 mapping[MAX_MAPS];
+
 static void *convertFile(void *arg){
 	char word[MAX_WORD_SIZE];
 
@@ -528,9 +531,7 @@ static void *convertFile(void *arg){
 		int args = parse_op(word, &op_code);
 		if (op_code == IGNORE) continue;		
 
-#ifdef DEBUG_INFO
 		mapping[pc] = line;
-#endif
 
 		pc++;
 		write_to_buffer(op_code);
@@ -680,4 +681,8 @@ void assemble(char *file_in, char *file_out){
 	ht_destroy(symb_table);
 	pthread_mutex_destroy(&reading_mutex);
 	pthread_mutex_destroy(&writing_mutex);
+}
+
+u32 *get_mapping(){
+	return mapping;
 }
