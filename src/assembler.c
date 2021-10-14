@@ -563,6 +563,8 @@ static void *convertFile(void *arg){
 				THROW_ERROR("Unexpected symbol '.'");
 		}
 	}
+	mapping[pc] = -1;
+
 	mutexLock(&writing_mutex);
 	writing_buffer_free = TRUE;
 	signalCondition(&writing_can_consume);
