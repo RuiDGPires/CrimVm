@@ -300,6 +300,12 @@ static int parse_op(char word[], int *op){
 	}else if (strcmp(word, "LOR") == 0){
 		*op = OP_LOR;
 		return MAKE_ARG2(ARG_REG, ARG_REG);		
+	}else if (strcmp(word, "GTI") == 0){
+		*op = OP_GTI;
+		return MAKE_ARG2(ARG_REG, ARG_REG);		
+	}else if (strcmp(word, "GTU") == 0){
+		*op = OP_GTU;
+		return MAKE_ARG2(ARG_REG, ARG_REG);		
 	}else if (strcmp(word, "SHR") == 0){
 		*op = OP_SHR;
 		return MAKE_ARG(ARG_REG);		
@@ -520,7 +526,7 @@ static void expect_type(u8 type){
 				val = word[1]; 
 			}else if (word[0] == '0' && word[1] == 'x')
 				val = hex_to_u32(&word[2]);
-			else if (is_number(word[0]))
+			else if (is_number(word[0]) || word[0] == '-')
 				val = (u32) atoi(word); 
 			else
 				val = ht_get(symb_table, word);

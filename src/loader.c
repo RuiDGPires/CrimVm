@@ -78,6 +78,8 @@ void load(Vm vm, FILE *file){
 			case OP_OR:
 			case OP_LOR:
 			case OP_XOR:
+			case OP_GTI:
+			case OP_GTU:
 			case OP_MUL:
 			case OP_DIV:
 				OP->args[0] = buffer[p++];
