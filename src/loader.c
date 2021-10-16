@@ -74,7 +74,9 @@ void load(Vm vm, FILE *file){
 			case OP_SUB:
 			case OP_CMP:
 			case OP_AND:
+			case OP_LAND:
 			case OP_OR:
+			case OP_LOR:
 			case OP_XOR:
 			case OP_MUL:
 			case OP_DIV:
