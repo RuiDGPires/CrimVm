@@ -127,6 +127,10 @@ void step(Vm vm){
 			res = ~(vm->regs[op.args[0]]);
 			vm->pc++;
 			goto store_res;
+		case OP_LNOT:
+			res = !(vm->regs[op.args[0]]);
+			vm->pc++;
+			goto store_res;
 		case OP_BR:
 			if (check_flags(vm->flags, op.args[0]))
 				vm->pc += op.args[1];
