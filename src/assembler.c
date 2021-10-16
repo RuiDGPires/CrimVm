@@ -293,7 +293,13 @@ static int parse_op(char word[], int *op){
 	}
 	else if (strcmp(word, "LNOT") == 0){
 		*op = OP_LNOT;
-		return MAKE_ARG(ARG_REG);	
+		return MAKE_ARG(ARG_REG);
+	}else if (strcmp(word, "LAND") == 0){
+		*op = OP_LAND;
+		return MAKE_ARG2(ARG_REG, ARG_REG);		
+	}else if (strcmp(word, "LOR") == 0){
+		*op = OP_LOR;
+		return MAKE_ARG2(ARG_REG, ARG_REG);		
 	}else if (strcmp(word, "SHR") == 0){
 		*op = OP_SHR;
 		return MAKE_ARG(ARG_REG);		
