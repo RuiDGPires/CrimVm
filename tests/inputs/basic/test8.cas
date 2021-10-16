@@ -1,0 +1,3 @@
+MVI R1 -1 
+PSH R1
+DMP
