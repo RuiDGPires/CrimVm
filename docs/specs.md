@@ -25,6 +25,9 @@ The result of the operation (except CMP) is always stored in the first register.
 | OR | u8 REG1, u8 REG2 | Performs bitwise or between the values in the registers and stores the result in REG1 |
 | XOR | u8 REG1, u8 REG2 | Performs bitwise xor between the values in the registers and stores the result in REG1 |
 | NOT | u8 REG | Performs bitwise not between the values in the registers and stores the result in REG1 |
+| LAND | u8 REG1, u8 REG2 | Performs logic and between the values in the registers and stores the result in REG1 |
+| LOR | u8 REG1, u8 REG2 | Performs logic or between the values in the registers and stores the result in REG1 |
+| LNOT | u8 REG | Performs logic not between the values in the registers and stores the result in REG1 |
 
 ### Shifting
 
