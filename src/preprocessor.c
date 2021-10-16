@@ -210,9 +210,19 @@ static void parse_word(char word[], u32 *pc){
 		(*pc)++;
 	}else if (strcmp(word, "OR") == 0){
 		(*pc)++;
+	}else if (strcmp(word, "LAND") == 0){
+		(*pc)++;
+	}else if (strcmp(word, "LOR") == 0){
+		(*pc)++;
+	}else if (strcmp(word, "GTI") == 0){
+		(*pc)++;
+	}else if (strcmp(word, "GTU") == 0){
+		(*pc)++;
 	}else if (strcmp(word, "XOR") == 0){
 		(*pc)++;
 	}else if (strcmp(word, "NOT") == 0){
+		(*pc)++;
+	}else if (strcmp(word, "LNOT") == 0){
 		(*pc)++;
 	}else if (strcmp(word, "SHR") == 0){
 		(*pc)++;

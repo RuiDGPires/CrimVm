@@ -139,6 +139,23 @@ void step(Vm vm){
 			res = !(vm->regs[op.args[0]]);
 			vm->pc++;
 			goto store_res;
+		case OP_GTI:
+			{
+				i32 a = vm->regs[op.args[0]];
+				i32 b = vm->regs[op.args[1]];
+				res = a > b;
+			}
+			vm->pc++;
+			goto store_res;
+		case OP_GTU:
+			{
+				u32 a = vm->regs[op.args[0]];
+				u32 b = vm->regs[op.args[1]];
+				res = a > b;
+			}
+			vm->pc++;
+			goto store_res;
+			
 		case OP_BR:
 			if (check_flags(vm->flags, op.args[0]))
 				vm->pc += op.args[1];
