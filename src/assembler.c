@@ -127,6 +127,7 @@ static char parse_special_char(char c){
 }
 
 static bool ends_in_dot = FALSE;
+u32 line = 1;
 static int get_word(char *word_buffer){
 	u32 p = 0;
 	bool is_comment = FALSE;
@@ -158,6 +159,8 @@ static int get_word(char *word_buffer){
 		signalCondition(&reading_can_produce);
 		mutexUnlock(&reading_mutex);
 
+		if (c == '\n')
+			line++;
 
 		if (!is_comment && !read_slash && c == '\\'){
 			read_slash = TRUE; 
@@ -286,6 +289,10 @@ static int parse_op(char word[], int *op){
 	}
 	else if (strcmp(word, "NOT") == 0){
 		*op = OP_NOT;
+		return MAKE_ARG(ARG_REG);	
+	}
+	else if (strcmp(word, "LNOT") == 0){
+		*op = OP_LNOT;
 		return MAKE_ARG(ARG_REG);	
 	}else if (strcmp(word, "SHR") == 0){
 		*op = OP_SHR;
@@ -517,6 +524,9 @@ static void expect_type(u8 type){
 	}
 }
 
+#define MAX_MAPS 4000
+u32 mapping[MAX_MAPS];
+
 static void *convertFile(void *arg){
 	char word[MAX_WORD_SIZE];
 
@@ -524,6 +534,8 @@ static void *convertFile(void *arg){
 		int op_code;
 		int args = parse_op(word, &op_code);
 		if (op_code == IGNORE) continue;		
+
+		mapping[pc] = line;
 
 		pc++;
 		write_to_buffer(op_code);
@@ -555,6 +567,8 @@ static void *convertFile(void *arg){
 				THROW_ERROR("Unexpected symbol '.'");
 		}
 	}
+	mapping[pc] = -1;
+
 	mutexLock(&writing_mutex);
 	writing_buffer_free = TRUE;
 	signalCondition(&writing_can_consume);
@@ -673,4 +687,8 @@ void assemble(char *file_in, char *file_out){
 	ht_destroy(symb_table);
 	pthread_mutex_destroy(&reading_mutex);
 	pthread_mutex_destroy(&writing_mutex);
+}
+
+u32 *get_mapping(){
+	return mapping;
 }
