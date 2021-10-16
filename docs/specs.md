@@ -28,6 +28,8 @@ The result of the operation (except CMP) is always stored in the first register.
 | LAND | u8 REG1, u8 REG2 | Performs logic and between the values in the registers and stores the result in REG1 |
 | LOR | u8 REG1, u8 REG2 | Performs logic or between the values in the registers and stores the result in REG1 |
 | LNOT | u8 REG | Performs logic not between the values in the registers and stores the result in REG1 |
+| GTU | u8 REG1, u32 REG2| Stores 1 in REG1 if REG1 > REG2 (unsigned), else stores 0 |
+| GTI | u8 REG1, u32 REG2| Stores 1 in REG1 if REG1 > REG2 (signed), else stores 0 |
 
 ### Shifting
 
